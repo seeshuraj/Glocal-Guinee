@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLOCAL GUINEE SARLU | Interactive Hero</title>
+    <meta name="description"
+        content="Experience the gravity-defying world of Glocal Guinee SARLU. Premium raw cashew nuts from Guinea.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <div id="app">
+        <canvas id="hero-canvas"></canvas>
+
+        <nav class="navbar">
+            <div class="logo">
+                <span class="logo-text">GLOCAL <span>GUINEE</span></span>
+            </div>
+            <div class="nav-links">
+                <a href="#about">About</a>
+                <a href="#process">Process</a>
+                <a href="#products">Products</a>
+                <button class="cta-mini">Get in Touch</button>
+            </div>
+        </nav>
+
+        <section class="hero-ui">
+            <div class="hero-content">
+                <h1 class="glitch" data-text="ANTIGRAVITY">ANTIGRAVITY</h1>
+                <p class="hero-subtitle">Redefining the Cashew Journey from the Heart of Guinea</p>
+                <div class="hero-description">
+                    <p>Experience the scenic landscapes of Guinea through our interactive 3D portal. Click, scroll, and
+                        drag to manipulate the physics of our premium raw cashew nuts.</p>
+                </div>
+                <div class="hero-actions">
+                    <button id="main-cta" class="cta-primary">Explore Our Mission</button>
+                    <div class="scroll-hint">
+                        <span class="mouse">
+                            <span class="wheel"></span>
+                        </span>
+                        <span>Scroll to Alter Gravity</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="interaction-overlay">
+                <div class="interaction-card" id="interaction-card">
+                    <span class="icon">🖱️</span>
+                    <p>Click anywhere to spawn a cashew</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="floating-contact">
+            <button id="floating-cta" class="cta-round">
+                <span class="icon">✉️</span>
+                <span class="text">Get in Touch</span>
+            </button>
+        </div>
+
+        <div class="contact-overlay" id="contact-overlay">
+            <div class="overlay-content">
+                <button class="close-overlay">×</button>
+                <h2>Let's Grow Together</h2>
+                <p>Ready to experience the finest raw cashew nuts from Guinea?</p>
+                <form class="simple-form">
+                    <input type="text" placeholder="Your Name">
+                    <input type="email" placeholder="Your Email">
+                    <textarea placeholder="Your Message"></textarea>
+                    <button type="submit" class="cta-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+
+        <aside class="side-stats">
+            <div class="stat-item">
+                <span class="stat-value">60</span>
+                <span class="stat-label">FPS ENGINE</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">9.8</span>
+                <span class="stat-label">UPWARD GRAVITY</span>
+            </div>
+        </aside>
+
+        <div class="loading-screen" id="loading-screen">
+            <div class="loader-content">
+                <div class="loader-circle"></div>
+                <span class="loader-text">Initializing Guinea Landscape...</span>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="/main.js"></script>
+</body>
+
+</html>
