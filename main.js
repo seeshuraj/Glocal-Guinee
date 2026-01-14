@@ -5,6 +5,83 @@ import { Assets } from './src/Assets.js';
 import { Physics } from './src/Physics.js';
 import { Particles } from './src/Particles.js';
 
+class ProductViewer {
+    constructor(containerId, assets) {
+        this.container = document.getElementById(containerId);
+        if (!this.container) return;
+        this.assets = assets;
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(45, this.container.clientWidth / this.container.clientHeight, 0.1, 100);
+        this.camera.position.z = 10;
+
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+        this.container.appendChild(this.renderer.domElement);
+
+        this.setupLights();
+        this.currentMesh = null;
+        this.isDragging = false;
+        this.previousMousePosition = { x: 0, y: 0 };
+
+        this.initInteractions();
+    }
+
+    setupLights() {
+        const ambient = new THREE.AmbientLight(0xffffff, 1);
+        this.scene.add(ambient);
+        const point = new THREE.PointLight(0x8a4fff, 2, 50);
+        point.position.set(5, 5, 5);
+        this.scene.add(point);
+    }
+
+    setProduct(type) {
+        if (this.currentMesh) this.scene.remove(this.currentMesh);
+
+        switch (type) {
+            case 'sesame':
+                this.currentMesh = this.assets.createSesame();
+                this.currentMesh.scale.set(4, 4, 4);
+                break;
+            case 'cashew':
+                this.currentMesh = this.assets.createCashew();
+                this.currentMesh.scale.set(3, 3, 3);
+                break;
+            case 'cocoa':
+                this.currentMesh = this.assets.createCocoa();
+                this.currentMesh.scale.set(2, 2, 2);
+                break;
+        }
+
+        if (this.currentMesh) {
+            this.scene.add(this.currentMesh);
+            gsap.from(this.currentMesh.scale, { x: 0, y: 0, z: 0, duration: 0.5, ease: "back.out" });
+        }
+    }
+
+    initInteractions() {
+        this.container.addEventListener('mousedown', () => this.isDragging = true);
+        window.addEventListener('mouseup', () => this.isDragging = false);
+        this.container.addEventListener('mousemove', (e) => {
+            if (this.isDragging && this.currentMesh) {
+                const deltaMove = {
+                    x: e.offsetX - this.previousMousePosition.x,
+                    y: e.offsetY - this.previousMousePosition.y
+                };
+                this.currentMesh.rotation.y += deltaMove.x * 0.01;
+                this.currentMesh.rotation.x += deltaMove.y * 0.01;
+            }
+            this.previousMousePosition = { x: e.offsetX, y: e.offsetY };
+        });
+    }
+
+    render() {
+        if (this.currentMesh && !this.isDragging) {
+            this.currentMesh.rotation.y += 0.005;
+        }
+        this.renderer.render(this.scene, this.camera);
+    }
+}
+
 class App {
     constructor() {
         this.scene = new Scene();
@@ -13,187 +90,142 @@ class App {
         this.particles = new Particles(this.scene.scene);
 
         this.cashews = [];
-        this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
+        this.productViewer = null;
 
         this.init();
     }
 
     init() {
+        // Initialize AOS
+        if (window.AOS) {
+            window.AOS.init({
+                duration: 800,
+                offset: 50,
+                once: false
+            });
+        }
+
         this.assets.createLandscape();
         this.setupInteractions();
-        this.spawnLoop();
+        this.setupFAQ();
+        this.setupScrollEffects();
+
+        // Initialize Product Viewer
+        this.productViewer = new ProductViewer('product-360-viewer', this.assets);
+        this.productViewer.setProduct('cashew');
+
         this.animate();
 
-        // Remove loading screen after a short delay
+        // Remove loading screen
         setTimeout(() => {
             const loadingScreen = document.getElementById('loading-screen');
             if (loadingScreen) {
                 loadingScreen.style.opacity = '0';
                 setTimeout(() => loadingScreen.remove(), 1000);
             }
-        }, 2000);
+        }, 1500);
     }
 
     setupInteractions() {
-        window.addEventListener('mousedown', (e) => this.onClick(e));
-        window.addEventListener('mousemove', (e) => this.onMouseMove(e));
-        window.addEventListener('wheel', (e) => this.onScroll(e));
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
 
-        // Custom CTA interaction
+        // CTA interactions
         const mainCta = document.getElementById('main-cta');
         if (mainCta) {
-            mainCta.addEventListener('mouseenter', () => {
-                gsap.to(mainCta, { scale: 1.05, duration: 0.3 });
-            });
-            mainCta.addEventListener('mouseleave', () => {
-                gsap.to(mainCta, { scale: 1, duration: 0.3 });
+            mainCta.addEventListener('click', () => {
+                document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
             });
         }
 
-        // Contact Overlay
-        const floatingCta = document.getElementById('floating-cta');
-        const contactOverlay = document.getElementById('contact-overlay');
-        const closeOverlay = document.querySelector('.close-overlay');
+        // Product selection
+        const productCards = document.querySelectorAll('.product-card');
+        productCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const product = card.getAttribute('data-product');
+                this.productViewer.setProduct(product);
 
-        if (floatingCta && contactOverlay) {
-            floatingCta.addEventListener('click', () => {
-                contactOverlay.style.display = 'flex';
-                gsap.from('.overlay-content', { scale: 0.8, opacity: 0, duration: 0.5, ease: "back.out(1.7)" });
+                // Scroll to viewer
+                document.getElementById('product-360-viewer').scrollIntoView({ behavior: 'smooth' });
             });
-        }
+        });
 
-        if (closeOverlay && contactOverlay) {
-            closeOverlay.addEventListener('click', () => {
-                gsap.to('.overlay-content', {
-                    scale: 0.8, opacity: 0, duration: 0.3, onComplete: () => {
-                        contactOverlay.style.display = 'none';
-                    }
+        // Counter animation
+        this.setupCounters();
+    }
+
+    setupCounters() {
+        const counters = document.querySelectorAll('.counter');
+        const options = { threshold: 1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = parseInt(entry.target.getAttribute('data-target'));
+                    gsap.to(entry.target, {
+                        innerText: target,
+                        duration: 2,
+                        snap: { innerText: 1 },
+                        ease: "power2.out"
+                    });
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, options);
+
+        counters.forEach(counter => observer.observe(counter));
+    }
+
+    setupFAQ() {
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const answer = item.querySelector('.faq-answer');
+                const isOpen = item.classList.contains('active');
+
+                // Close others
+                faqItems.forEach(i => {
+                    i.classList.remove('active');
+                    i.querySelector('.faq-answer').style.maxHeight = null;
                 });
+
+                if (!isOpen) {
+                    item.classList.add('active');
+                    answer.style.maxHeight = answer.scrollHeight + "px";
+                }
             });
-        }
-    }
-
-    onMouseMove(event) {
-        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-        if (event.buttons === 1) { // Left-click dragging
-            this.influenceCashews();
-        }
-    }
-
-    influenceCashews() {
-        const vector = new THREE.Vector3(this.mouse.x, this.mouse.y, 0.5);
-        vector.unproject(this.scene.camera);
-        const dir = vector.sub(this.scene.camera.position).normalize();
-        const distance = -this.scene.camera.position.z / dir.z;
-        const mouseWorldPos = this.scene.camera.position.clone().add(dir.multiplyScalar(distance));
-
-        this.cashews.forEach(c => {
-            const dist = c.pos.distanceTo(mouseWorldPos);
-            if (dist < 15) {
-                // Apply a repulsion/attraction force
-                const force = c.pos.clone().sub(mouseWorldPos).normalize().multiplyScalar(0.5 / (dist + 1));
-                c.pos.add(force);
-            }
         });
     }
 
-    onClick(event) {
-        // Calculate mouse position in normalized device coordinates
-        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-        // Spawn a cashew at mouse position
-        const vector = new THREE.Vector3(this.mouse.x, this.mouse.y, 0.5);
-        vector.unproject(this.scene.camera);
-        const dir = vector.sub(this.scene.camera.position).normalize();
-        const distance = -this.scene.camera.position.z / dir.z;
-        const pos = this.scene.camera.position.clone().add(dir.multiplyScalar(distance));
-
-        this.spawnCashew(pos);
-    }
-
-    onScroll(event) {
-        // Adjust gravity based on scroll
-        const delta = event.deltaY * 0.001;
-        const currentGravity = this.physics.gravity;
-        const newGravity = Math.max(-20, Math.min(5, currentGravity + delta));
-        this.physics.setGravity(newGravity);
-
-        // Update UI stat
-        const gravLabel = document.querySelector('.stat-item:nth-child(2) .stat-value');
-        if (gravLabel) {
-            gravLabel.textContent = Math.abs(newGravity).toFixed(1);
-        }
-    }
-
-    spawnCashew(position = null) {
-        const cashew = this.assets.createCashew();
-        if (position) {
-            cashew.position.copy(position);
-        } else {
-            // Random spawn from "trees" or ground level
-            cashew.position.set(
-                (Math.random() - 0.5) * 50,
-                0,
-                (Math.random() - 0.5) * 50
-            );
-        }
-
-        cashew.scale.set(0, 0, 0);
-        this.scene.scene.add(cashew);
-
-        gsap.to(cashew.scale, {
-            x: 0.5, y: 0.5, z: 0.5,
-            duration: 0.5,
-            ease: "back.out(1.7)"
-        });
-
-        const initialVelocity = {
-            x: (Math.random() - 0.5) * 0.1,
-            y: 0.2 + Math.random() * 0.2, // Start with some initial upward boost
-            z: (Math.random() - 0.5) * 0.1
-        };
-
-        const physObj = this.physics.addObject(cashew, initialVelocity);
-        this.cashews.push(physObj);
-    }
-
-    spawnLoop() {
-        setInterval(() => {
-            if (this.cashews.length < 50) {
-                this.spawnCashew();
+    setupScrollEffects() {
+        // Parallax for hero content
+        window.addEventListener('scroll', () => {
+            const scrolled = window.scrollY;
+            const heroContent = document.querySelector('.hero-content');
+            if (heroContent) {
+                heroContent.style.transform = `translateY(${scrolled * 0.3}px)`;
+                heroContent.style.opacity = 1 - (scrolled / 500);
             }
-        }, 3000);
+        });
     }
 
     animate() {
         requestAnimationFrame(() => this.animate());
 
-        this.physics.update();
-        this.particles.update();
-
-        // Occasional particles from cashews
-        if (Math.random() > 0.8) {
-            this.cashews.forEach(c => {
-                if (Math.random() > 0.95) {
-                    this.particles.createTrail(c.mesh.position);
-                }
-            });
-        }
-
-        // Cleanup cashews that are too high
-        for (let i = this.cashews.length - 1; i >= 0; i--) {
-            if (this.cashews[i].pos.y > 60) {
-                this.scene.scene.remove(this.cashews[i].mesh);
-                this.cashews.splice(i, 1);
-            }
-        }
+        // Simple rotation for some basic 3D elements if they were in view
+        if (this.productViewer) this.productViewer.render();
 
         this.scene.render();
     }
 }
 
-new App();
+document.addEventListener('DOMContentLoaded', () => {
+    new App();
+});

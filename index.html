@@ -4,14 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLOCAL GUINEE SARLU | Interactive Hero</title>
+    <title>GLOCAL GUINEE SARLU | Premium Import-Export Guinea</title>
     <meta name="description"
-        content="Experience the gravity-defying world of Glocal Guinee SARLU. Premium raw cashew nuts from Guinea.">
+        content="GLOCAL GUINEE SARLU - Leading exporter of premium Sesame, Raw Cashew Nuts, and Cocoa from Guinea. Experience our 3D interactive journey.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="stylesheet" href="./style.css">
 </head>
 
@@ -24,79 +25,302 @@
                 <span class="logo-text">GLOCAL <span>GUINEE</span></span>
             </div>
             <div class="nav-links">
-                <a href="#about">About</a>
-                <a href="#process">Process</a>
+                <a href="#home">Home</a>
+                <a href="#about">About Us</a>
+                <a href="#process">Our Process</a>
                 <a href="#products">Products</a>
-                <button class="cta-mini">Get in Touch</button>
+                <a href="#partners">Partners</a>
+                <a href="#contact">Contact</a>
+                <button class="cta-mini" id="nav-cta">Get in Touch</button>
             </div>
         </nav>
 
-        <section class="hero-ui">
-            <div class="hero-content">
-                <h1 class="glitch" data-text="ANTIGRAVITY">ANTIGRAVITY</h1>
-                <p class="hero-subtitle">Redefining the Cashew Journey from the Heart of Guinea</p>
-                <div class="hero-description">
-                    <p>Experience the scenic landscapes of Guinea through our interactive 3D portal. Click, scroll, and
-                        drag to manipulate the physics of our premium raw cashew nuts.</p>
-                </div>
-                <div class="hero-actions">
-                    <button id="main-cta" class="cta-primary">Explore Our Mission</button>
-                    <div class="scroll-hint">
-                        <span class="mouse">
-                            <span class="wheel"></span>
-                        </span>
-                        <span>Scroll to Alter Gravity</span>
+        <main id="scroll-container">
+            <!-- HERO SECTION -->
+            <section id="home" class="hero-ui">
+                <div class="hero-content">
+                    <h1 id="hero-title" class="glitch" data-text="GLOCAL">GLOCAL</h1>
+                    <p class="hero-subtitle">Premium Commodities from the Heart of Guinea</p>
+                    <div class="hero-description">
+                        <p>Specializing in high-quality Sesame, Raw Cashew Nuts, and Cocoa. We bridge the gap between
+                            Guinean agriculture and global markets.</p>
+                    </div>
+                    <div class="hero-actions">
+                        <button id="main-cta" class="cta-primary">Explore Products</button>
+                        <div class="scroll-hint">
+                            <span class="mouse"><span class="wheel"></span></span>
+                            <span>Scroll to Explore</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="interaction-overlay">
-                <div class="interaction-card" id="interaction-card">
-                    <span class="icon">🖱️</span>
-                    <p>Click anywhere to spawn a cashew</p>
+                <div class="side-stats-mini">
+                    <div class="stat-item" data-aos="fade-up">
+                        <span class="stat-value counter" data-target="15">0</span>
+                        <span class="stat-label">YEARS EXP</span>
+                    </div>
+                    <div class="stat-item" data-aos="fade-up" data-aos-delay="100">
+                        <span class="stat-value counter" data-target="4">0</span>
+                        <span class="stat-label">GLOBAL PORTS</span>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <div class="floating-contact">
-            <button id="floating-cta" class="cta-round">
-                <span class="icon">✉️</span>
-                <span class="text">Get in Touch</span>
-            </button>
-        </div>
+            <!-- ABOUT US SECTION -->
+            <section id="about" class="section">
+                <div class="container">
+                    <div class="section-header" data-aos="fade-up">
+                        <h2 class="section-title">Established Excellence</h2>
+                        <p class="section-tagline">Our Journey from 2008 to Today</p>
+                    </div>
+                    <div class="about-grid">
+                        <div class="about-text" data-aos="fade-right">
+                            <p>GLOCAL GUINEE SARLU has been a cornerstone of Guinea's export sector since 2008. We pride
+                                ourselves on ethical sourcing and premium quality control.</p>
+                            <ul class="milestones">
+                                <li><strong>2008:</strong> Founded in Conakry, starting with Sesame exports.</li>
+                                <li><strong>2015:</strong> Expanded to Raw Cashew Nuts (RCN) with shells.</li>
+                                <li><strong>2022:</strong> Reached new heights in Cocoa distribution to Asian markets.
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="timeline-3d-container" id="timeline-3d" data-aos="zoom-in">
+                            <!-- 3D Timeline will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        <div class="contact-overlay" id="contact-overlay">
-            <div class="overlay-content">
-                <button class="close-overlay">×</button>
-                <h2>Let's Grow Together</h2>
-                <p>Ready to experience the finest raw cashew nuts from Guinea?</p>
-                <form class="simple-form">
-                    <input type="text" placeholder="Your Name">
-                    <input type="email" placeholder="Your Email">
-                    <textarea placeholder="Your Message"></textarea>
-                    <button type="submit" class="cta-primary">Send Message</button>
-                </form>
-            </div>
-        </div>
+            <!-- PROCESS SECTION -->
+            <section id="process" class="section dark-bg">
+                <div class="container">
+                    <div class="section-header" data-aos="fade-up">
+                        <h2 class="section-title">How We Function</h2>
+                        <p class="section-tagline">A Seamless Supply Chain from Farm to Port</p>
+                    </div>
+                    <div class="process-3d-visual" id="process-3d" data-aos="fade-in">
+                        <!-- 3D Supply Chain Diagram -->
+                    </div>
+                    <div class="process-steps">
+                        <div class="step" data-aos="fade-up" data-aos-delay="0">
+                            <span class="step-num">01</span>
+                            <h3>Sourcing</h3>
+                            <p>Directly from local farmers in Guinea center.</p>
+                        </div>
+                        <div class="step" data-aos="fade-up" data-aos-delay="100">
+                            <span class="step-num">02</span>
+                            <h3>Processing</h3>
+                            <p>State-to-the-art cleaning and drying facilities.</p>
+                        </div>
+                        <div class="step" data-aos="fade-up" data-aos-delay="200">
+                            <span class="step-num">03</span>
+                            <h3>Quality Check</h3>
+                            <p>Rigorous SGS/Bureau Veritas inspections.</p>
+                        </div>
+                        <div class="step" data-aos="fade-up" data-aos-delay="300">
+                            <span class="step-num">04</span>
+                            <h3>Shipping</h3>
+                            <p>Exporting to Turkey, China, India, and Vietnam.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        <aside class="side-stats">
-            <div class="stat-item">
-                <span class="stat-value">60</span>
-                <span class="stat-label">FPS ENGINE</span>
+            <!-- PRODUCTS SECTION -->
+            <section id="products" class="section">
+                <div class="container">
+                    <div class="section-header" data-aos="fade-up">
+                        <h2 class="section-title">Our Commodities</h2>
+                        <p class="section-tagline">Premium Quality, Sustainably Sourced</p>
+                    </div>
+                    <div class="product-grid">
+                        <div class="product-card" data-aos="flip-left" data-product="sesame">
+                            <div class="card-inner">
+                                <div class="card-front">
+                                    <div class="product-icon">🌾</div>
+                                    <h3>Sesame</h3>
+                                    <p>Golden seeds from the fertile Guinean plains.</p>
+                                </div>
+                                <div class="card-back">
+                                    <h3>Specifications</h3>
+                                    <ul>
+                                        <li>Purity: 99% min</li>
+                                        <li>Oil Content: 48% min</li>
+                                        <li>Moisture: 6% max</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-card" data-aos="flip-left" data-aos-delay="100" data-product="cashew">
+                            <div class="card-inner">
+                                <div class="card-front">
+                                    <div class="product-icon">🥜</div>
+                                    <h3>Raw Cashew Nuts</h3>
+                                    <p>Premium RCN with high KOR and outturn.</p>
+                                </div>
+                                <div class="card-back">
+                                    <h3>Specifications</h3>
+                                    <ul>
+                                        <li>KOR: 48-52 lbs</li>
+                                        <li>Nut Count: 180-200</li>
+                                        <li>Origin: Guinea</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-card" data-aos="flip-left" data-aos-delay="200" data-product="cocoa">
+                            <div class="card-inner">
+                                <div class="card-front">
+                                    <div class="product-icon">🍫</div>
+                                    <h3>Cocoa Beans</h3>
+                                    <p>Rich, aromatic cocoa for fine chocolate.</p>
+                                </div>
+                                <div class="card-back">
+                                    <h3>Specifications</h3>
+                                    <ul>
+                                        <li>Fermentation: 95% min</li>
+                                        <li>Moisture: 7.5% max</li>
+                                        <li>Grade: G1 & G2</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-viewer-wrap" data-aos="fade-up">
+                        <h3>Interactive 360° Viewer</h3>
+                        <div id="product-360-viewer" class="viewer-canvas"></div>
+                        <p>Interact to view commodity textures</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PARTNERS SECTION -->
+            <section id="partners" class="section dark-bg">
+                <div class="container text-center">
+                    <div class="section-header" data-aos="fade-up">
+                        <h2 class="section-title">Global Presence</h2>
+                        <p class="section-tagline">Connecting Guinea to the World</p>
+                    </div>
+                    <div class="globe-container" id="globe-3d" data-aos="zoom-out">
+                        <!-- 3D Interactive Globe -->
+                    </div>
+                    <div class="partner-carousel">
+                        <div class="marquee">
+                            <div class="marquee-content">
+                                <span class="partner-logo">Turkey</span>
+                                <span class="partner-logo">China</span>
+                                <span class="partner-logo">India</span>
+                                <span class="partner-logo">Vietnam</span>
+                                <span class="partner-logo">Singapore</span>
+                                <span class="partner-logo">UAE</span>
+                                <!-- Duplicate for seamless loop -->
+                                <span class="partner-logo">Turkey</span>
+                                <span class="partner-logo">China</span>
+                                <span class="partner-logo">India</span>
+                                <span class="partner-logo">Vietnam</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CONTACT SECTION -->
+            <section id="contact" class="section">
+                <div class="container">
+                    <div class="section-header" data-aos="fade-up">
+                        <h2 class="section-title">Get In Touch</h2>
+                        <p class="section-tagline">Start your agricultural partnership today</p>
+                    </div>
+                    <div class="contact-wrap">
+                        <div class="contact-info" data-aos="fade-right">
+                            <div class="info-item">
+                                <div class="icon">📍</div>
+                                <div>
+                                    <h4>Location</h4>
+                                    <p>Conakry, Republic of Guinea</p>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="icon">📞</div>
+                                <div>
+                                    <h4>Phone / WhatsApp</h4>
+                                    <p>(+224) 656314191 / 622461483</p>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <div class="icon">✉️</div>
+                                <div>
+                                    <h4>Email</h4>
+                                    <p>glocal.guinee@gmail.com</p>
+                                </div>
+                            </div>
+                            <div class="faq-accordion">
+                                <h3>Frequently Asked Questions</h3>
+                                <div class="faq-item">
+                                    <div class="faq-question">What is your shipment lead time? <span>+</span></div>
+                                    <div class="faq-answer">Usually 15-21 days from order confirmation to port loading.
+                                    </div>
+                                </div>
+                                <div class="faq-item">
+                                    <div class="faq-question">Do you provide SGS inspection? <span>+</span></div>
+                                    <div class="faq-answer">Yes, all our shipments are certified by SGS or Bureau
+                                        Veritas.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="contact-form-card" data-aos="fade-left">
+                            <form id="contact-form" class="animated-form">
+                                <div class="form-group">
+                                    <input type="text" id="name" placeholder="Full Name" required>
+                                    <span class="bar"></span>
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" id="email" placeholder="Email Address" required>
+                                    <span class="bar"></span>
+                                </div>
+                                <div class="form-group">
+                                    <select id="interest">
+                                        <option value="">Interested In...</option>
+                                        <option value="sesame">Sesame Seeds</option>
+                                        <option value="cashew">Raw Cashew Nuts</option>
+                                        <option value="cocoa">Cocoa Beans</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <textarea id="message" placeholder="Your Message" required></textarea>
+                                    <span class="bar"></span>
+                                </div>
+                                <button type="submit" class="cta-primary btn-submit">
+                                    <span class="btn-text">Send Message</span>
+                                    <span class="spinner"></span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-content container">
+                <div class="footer-logo">GLOCAL <span>GUINEE</span></div>
+                <div class="social-links">
+                    <a href="#" class="social-icon">FB</a>
+                    <a href="#" class="social-icon">LI</a>
+                    <a href="#" class="social-icon">WA</a>
+                    <a href="#" class="social-icon">IG</a>
+                </div>
+                <p class="copyright">&copy; 2026 GLOCAL GUINEE SARLU. All Rights Reserved.</p>
             </div>
-            <div class="stat-item">
-                <span class="stat-value">9.8</span>
-                <span class="stat-label">UPWARD GRAVITY</span>
-            </div>
-        </aside>
+        </footer>
 
         <div class="loading-screen" id="loading-screen">
             <div class="loader-content">
                 <div class="loader-circle"></div>
-                <span class="loader-text">Initializing Guinea Landscape...</span>
+                <span class="loader-text">Loading Glocal Guinee Experience...</span>
             </div>
         </div>
     </div>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script type="module" src="/main.js"></script>
 </body>
 

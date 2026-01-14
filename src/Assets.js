@@ -5,26 +5,29 @@ export class Assets {
         this.scene = scene;
         this.cashewGeometry = this.createCashewGeometry();
         this.cashewMaterial = new THREE.MeshStandardMaterial({
-            color: 0xc9a227,
-            roughness: 0.7,
-            metalness: 0.1,
-            emissive: 0x221100
+            color: 0x8a4fff,
+            roughness: 0.4,
+            metalness: 0.6,
+        });
+
+        this.sesameGeometry = new THREE.SphereGeometry(0.5, 8, 8);
+        this.sesameMaterial = new THREE.MeshStandardMaterial({
+            color: 0xffd700,
+            roughness: 0.3
+        });
+
+        this.cocoaGeometry = new THREE.CapsuleGeometry(1, 2, 4, 8);
+        this.cocoaMaterial = new THREE.MeshStandardMaterial({
+            color: 0x3d1f14,
+            roughness: 0.8
         });
     }
 
-    // Procedurally create a cashew-like shape (seed + apple)
     createCashewGeometry() {
-        // We'll create a composite geometry or a more specific lathe
         const points = [];
-        // Bottom seed part (kidney shape)
         for (let i = 0; i < 8; i++) {
-            const rad = Math.sin(i * 0.4) * 1.5 + 1.2;
-            points.push(new THREE.Vector2(rad, i * 0.8));
-        }
-        // Top apple part
-        for (let i = 8; i < 15; i++) {
-            const rad = Math.cos((i - 8) * 0.4) * 3 + 1;
-            points.push(new THREE.Vector2(rad, i * 1.2));
+            const rad = Math.sin(i * 0.4) * 0.8 + 0.6;
+            points.push(new THREE.Vector2(rad, i * 0.4));
         }
         return new THREE.LatheGeometry(points, 20);
     }
@@ -32,47 +35,31 @@ export class Assets {
     createCashew() {
         const cashew = new THREE.Mesh(this.cashewGeometry, this.cashewMaterial);
         cashew.castShadow = true;
-        cashew.receiveShadow = true;
         cashew.scale.set(0.5, 0.5, 0.5);
         return cashew;
     }
 
-    createTree(x, z) {
-        // Simple low-poly tree representation
-        const trunkGeometry = new THREE.CylinderGeometry(0.5, 1, 15, 8);
-        const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x4d291a });
-        const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
-        trunk.position.set(x, 7.5, z);
+    createSesame() {
+        const sesame = new THREE.Mesh(this.sesameGeometry, this.sesameMaterial);
+        sesame.scale.set(0.1, 0.2, 0.1);
+        return sesame;
+    }
 
-        const foliageGeometry = new THREE.SphereGeometry(6, 8, 8);
-        const foliageMaterial = new THREE.MeshStandardMaterial({ color: 0x1a472a });
-        const foliage = new THREE.Mesh(foliageGeometry, foliageMaterial);
-        foliage.position.set(x, 15, z);
-
-        this.scene.add(trunk);
-        this.scene.add(foliage);
+    createCocoa() {
+        const cocoa = new THREE.Mesh(this.cocoaGeometry, this.cocoaMaterial);
+        cocoa.scale.set(0.5, 0.5, 0.5);
+        return cocoa;
     }
 
     createLandscape() {
-        const geometry = new THREE.PlaneGeometry(500, 500, 20, 20);
+        const geometry = new THREE.PlaneGeometry(1000, 1000);
         const material = new THREE.MeshStandardMaterial({
-            color: 0x050a05,
-            roughness: 0.8,
-            wireframe: false
+            color: 0x050510,
+            roughness: 1
         });
         const ground = new THREE.Mesh(geometry, material);
         ground.rotation.x = -Math.PI / 2;
-        ground.position.y = 0;
         ground.receiveShadow = true;
         this.scene.add(ground);
-
-        // Add some trees
-        for (let i = 0; i < 15; i++) {
-            const tx = (Math.random() - 0.5) * 200;
-            const tz = (Math.random() - 0.5) * 200;
-            if (Math.abs(tx) > 30 || Math.abs(tz) > 30) {
-                this.createTree(tx, tz);
-            }
-        }
     }
 }
