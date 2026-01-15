@@ -4,19 +4,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLOCAL GUINEE SARLU | Premium Import-Export Guinea</title>
-    <meta name="description"
-        content="GLOCAL GUINEE SARLU - Leading exporter of premium Sesame, Raw Cashew Nuts, and Cocoa from Guinea. Experience our 3D interactive journey.">
+    <title>Glocal Guinée - Premium Agricultural Processing</title>
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="stylesheet" href="style.css?v=4">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;600&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
-    <link rel="stylesheet" href="./style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        /* CRITICAL FIXES - INTERNAL STYLE TO BYPASS CACHE */
+
+        /* 1. Hide the empty 3D process container to fix the huge gap */
+        .process-3d-visual,
+        #process-3d {
+            display: none !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .process-steps {
+            margin-top: 2rem !important;
+            /* Ensure nice spacing after removing the gap */
+        }
+
+        /* 2. Globe Styling */
+        .world-map path {
+            fill-opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+
+        .world-map path:hover {
+            fill: #a8dfbc !important;
+            /* Green highlight on hover */
+            filter: drop-shadow(0 0 5px rgba(168, 223, 188, 0.5));
+        }
+
+        /* 3. Cashew Animation Visibility */
+        .cashew-fruit {
+            font-size: 5rem !important;
+            top: -30px !important;
+            opacity: 1 !important;
+            /* Force visible for testing if JS fails */
+            display: block !important;
+            z-index: 100 !important;
+            filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.3));
+        }
+
+        /* 4. Product Card Images */
+        .card-back {
+            background-color: #222 !important;
+            z-index: 2 !important;
+        }
+
+        .card-back::before {
+            background: rgba(0, 0, 0, 0.5) !important;
+        }
+    </style>
 </head>
 
 <body>
+    <div id="loading-screen">
+        <div class="loader-content">
+            <div class="logo-loader">GG</div>
+            <div class="loading-bar">
+                <div class="progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fail-safe: Remove loading screen if JS hangs -->
+    <script>
+        setTimeout(() => {
+            const loader = document.getElementById('loading-screen');
+            if (loader) {
+                console.warn('Force removing loading screen via fail-safe');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+            }
+        }, 3000);
+    </script>
     <div id="app">
         <canvas id="hero-canvas"></canvas>
 
@@ -140,7 +213,7 @@
                                     <h3>Sesame</h3>
                                     <p>Golden seeds from the fertile Guinean plains.</p>
                                 </div>
-                                <div class="card-back">
+                                <div class="card-back bg-sesame">
                                     <h3>Specifications</h3>
                                     <ul>
                                         <li>Purity: 99% min</li>
@@ -157,7 +230,7 @@
                                     <h3>Raw Cashew Nuts</h3>
                                     <p>Premium RCN with high KOR and outturn.</p>
                                 </div>
-                                <div class="card-back">
+                                <div class="card-back bg-cashew">
                                     <h3>Specifications</h3>
                                     <ul>
                                         <li>KOR: 48-52 lbs</li>
@@ -174,7 +247,7 @@
                                     <h3>Cocoa Beans</h3>
                                     <p>Rich, aromatic cocoa for fine chocolate.</p>
                                 </div>
-                                <div class="card-back">
+                                <div class="card-back bg-cocoa">
                                     <h3>Specifications</h3>
                                     <ul>
                                         <li>Fermentation: 95% min</li>
@@ -186,9 +259,20 @@
                         </div>
                     </div>
                     <div class="product-viewer-wrap" data-aos="fade-up">
-                        <h3>Interactive 360° Viewer</h3>
-                        <div id="product-360-viewer" class="viewer-canvas"></div>
-                        <p>Interact to view commodity textures</p>
+                        <h3>From Seed to Harvest</h3>
+
+                        <!-- NEW CLEANER GROWTH TIMELINE -->
+                        <!-- NEW CANVAS BASED GROWTH ANIMATION (User Requested) -->
+                        <div id="cashew-canvas-container"
+                            style="position: relative; height: 500px; width: 100%; overflow: hidden; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                            <canvas id="growthCanvas"></canvas>
+                            <div id="canvas-overlay-text"
+                                style="position: absolute; bottom: 20px; left: 20px; background: rgba(255,255,255,0.9); padding: 15px; border-radius: 10px; pointer-events: none;">
+                                <h4 id="stage-title" style="color: #7e22ce; margin: 0;">Scroll to Grow 🌱</h4>
+                                <p id="stage-desc" style="margin: 5px 0 0 0; font-size: 0.9em; color: #666;">Experience
+                                    the journey from seed to harvest.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -197,27 +281,62 @@
             <section id="partners" class="section dark-bg">
                 <div class="container text-center">
                     <div class="section-header" data-aos="fade-up">
-                        <h2 class="section-title">Global Presence</h2>
+                        <h2 class="section-title">Global Trade Network</h2>
                         <p class="section-tagline">Connecting Guinea to the World</p>
                     </div>
-                    <div class="globe-container" id="globe-3d" data-aos="zoom-out">
-                        <!-- 3D Interactive Globe -->
-                    </div>
-                    <div class="partner-carousel">
-                        <div class="marquee">
-                            <div class="marquee-content">
-                                <span class="partner-logo">Turkey</span>
-                                <span class="partner-logo">China</span>
-                                <span class="partner-logo">India</span>
-                                <span class="partner-logo">Vietnam</span>
-                                <span class="partner-logo">Singapore</span>
-                                <span class="partner-logo">UAE</span>
-                                <!-- Duplicate for seamless loop -->
-                                <span class="partner-logo">Turkey</span>
-                                <span class="partner-logo">China</span>
-                                <span class="partner-logo">India</span>
-                                <span class="partner-logo">Vietnam</span>
+
+                    <!-- USER PROVIDED 3D GLOBE -->
+                    <div class="globe-3d" data-aos="zoom-in">
+                        <div class="rotating-globe">
+                            <!-- Markers -->
+                            <div class="marker" style="top: 45%; left: 55%;" title="India">
+                                <div class="marker-label">India 🇮🇳</div>
                             </div>
+                            <div class="marker" style="top: 35%; left: 42%;" title="Turkey">
+                                <div class="marker-label">Turkey 🇹🇷</div>
+                            </div>
+                            <div class="marker" style="top: 48%; left: 65%;" title="Vietnam">
+                                <div class="marker-label">Vietnam 🇻🇳</div>
+                            </div>
+                            <div class="marker" style="top: 38%; left: 70%;" title="China">
+                                <div class="marker-label">China 🇨🇳</div>
+                            </div>
+                            <!-- GUINEA HQ MARKER - Highlighted -->
+                            <div class="marker"
+                                style="top: 55%; left: 28%; background: radial-gradient(circle at 30% 30%, #f59e0b, #d97706); box-shadow: 0 0 15px rgba(245, 158, 11, 0.8); width: 25px; height: 25px; z-index: 10;"
+                                title="Guinea (HQ)">
+                                <div class="marker-label" style="opacity: 1; top: -50px; background: #d97706;">Guinea
+                                    🇬🇳<br>(HQ)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-grid">
+                        <div class="info-box" style="border-color: #d97706; background: #fffaf0;" data-aos="fade-up"
+                            data-aos-delay="0">
+                            <h3 style="color: #d97706;">🇬🇳 Guinea (HQ)</h3>
+                            <p>Sourcing & Processing</p>
+                            <p style="font-size: 0.8em; color: #d97706; margin-top: 5px;">Heart of Operations</p>
+                        </div>
+                        <div class="info-box" data-aos="fade-up" data-aos-delay="100">
+                            <h3>🇮🇳 India</h3>
+                            <p>Sesame | Cashew | Cocoa</p>
+                            <p style="font-size: 0.8em; color: #1e3c72; margin-top: 5px;">Key Market</p>
+                        </div>
+                        <div class="info-box" data-aos="fade-up" data-aos-delay="200">
+                            <h3>🇹🇷 Turkey</h3>
+                            <p>Sesame | Cashew</p>
+                            <p style="font-size: 0.8em; color: #1e3c72; margin-top: 5px;">Regional Hub</p>
+                        </div>
+                        <div class="info-box" data-aos="fade-up" data-aos-delay="300">
+                            <h3>🇻🇳 Vietnam</h3>
+                            <p>Sesame | Cashew | Cocoa</p>
+                            <p style="font-size: 0.8em; color: #1e3c72; margin-top: 5px;">Growth Market</p>
+                        </div>
+                        <div class="info-box" data-aos="fade-up" data-aos-delay="400">
+                            <h3>🇨🇳 China</h3>
+                            <p>Sesame | Cashew | Cocoa</p>
+                            <p style="font-size: 0.8em; color: #1e3c72; margin-top: 5px;">Major Market</p>
                         </div>
                     </div>
                 </div>
@@ -320,8 +439,8 @@
             </div>
         </div>
     </div>
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-    <script type="module" src="/main.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script type="module" src="/main.js?v=5"></script>
 </body>
 
 </html>
