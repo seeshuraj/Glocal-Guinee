@@ -102,10 +102,11 @@ class App {
     }
 
     init() {
-        // Initialize Site-Wide Animations
-        this.setupSiteAnimations();
+        // Initialize Animation Systems
+        this.setupScrollTrigger();
+        this.setupScrollEffects();
 
-        // Remove loading screen FIRST
+        // Remove loading screen FIRST for perceived performance
         const loadingScreen = document.getElementById('loading-screen');
         if (loadingScreen) {
             setTimeout(() => {
@@ -117,34 +118,16 @@ class App {
             }, 1000);
         }
 
-        // Then initialize everything else
+        // Initialize Core Components
         try {
             this.assets.createLandscape();
         } catch (e) {
-            console.log('3D assets disabled');
+            console.warn('3D background disabled');
         }
 
         this.setupInteractions();
         this.setupFAQ();
-        this.setupScrollEffects();
-
-        // Robust GSAP Setup
-        const initAnimations = () => {
-            const heroTitle = document.getElementById('hero-title');
-            if (heroTitle) {
-                try {
-                    this.setupGSAPAnimations();
-                    console.log('GSAP Animations Initialized');
-                } catch (e) {
-                    console.error('GSAP Init Failed:', e);
-                }
-            } else {
-                // Retry if DOM not ready
-                requestAnimationFrame(initAnimations);
-            }
-        };
-        initAnimations();
-
+        this.setupContactForm();
         this.animate();
     }
 
@@ -629,105 +612,67 @@ class App {
         });
     }
 
-    setupSiteAnimations() {
-        // Initialize Contact Form Logic
-        this.setupContactForm();
+    setupScrollTrigger() {
+        // 1. Hero Content Parallax (More advanced)
+        gsap.to(".hero-content", {
+            scrollTrigger: {
+                trigger: ".hero-ui",
+                start: "top top",
+                end: "bottom top",
+                scrub: 1.5
+            },
+            y: 150,
+            opacity: 0,
+            scale: 0.95,
+            ease: "none"
+        });
 
-        // 1. Generic Section Headers Fade Up
+        // 2. Section Header Stagger (Tagline + Title)
         const headers = gsap.utils.toArray('.section-header');
         headers.forEach(header => {
-            gsap.fromTo(header,
-                { opacity: 0, y: 50 },
-                {
-                    scrollTrigger: {
-                        trigger: header,
-                        start: 'top 85%',
-                        toggleActions: 'play none none reverse'
-                    },
-                    opacity: 1,
-                    y: 0,
-                    duration: 1,
-                    ease: 'power3.out'
+            const tagline = header.querySelector('.section-tagline');
+            const title = header.querySelector('.section-title');
+
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: header,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
                 }
-            );
+            });
+
+            if (tagline) tl.from(tagline, { opacity: 0, y: 20, duration: 0.6, ease: "power2.out" });
+            if (title) tl.from(title, { opacity: 0, y: 30, duration: 0.8, ease: "power3.out" }, "-=0.4");
         });
 
-        // 2. Info Boxes (Partners) - Staggered
-        ScrollTrigger.batch('.info-box', {
-            start: 'top 85%',
-            onEnter: batch => gsap.fromTo(batch,
-                { opacity: 0, y: 30 },
-                { opacity: 1, y: 0, stagger: 0.15, duration: 0.8, ease: 'power2.out' }
-            ),
-            onLeaveBack: batch => gsap.to(batch, { opacity: 0, y: 30, overwrite: true })
-        });
+        // 3. Staggered Reveals for Lists and Grids
+        const staggerConfigs = [
+            { selector: '.milestones li', trigger: '.about-grid', x: -30 },
+            { selector: '.step', trigger: '.process-steps', y: 50 },
+            { selector: '.product-card', trigger: '.product-grid', y: 40, scale: 0.9 },
+            { selector: '.info-box', trigger: '.info-grid', y: 30 },
+            { selector: '.info-item', trigger: '.contact-wrap', x: -30 }
+        ];
 
-        // 3. Process Steps - Staggered
-        ScrollTrigger.batch('.step', {
-            start: 'top 85%',
-            onEnter: batch => gsap.fromTo(batch,
-                { opacity: 0, y: 50 },
-                { opacity: 1, y: 0, stagger: 0.2, duration: 0.6, ease: 'back.out(1.2)' }
-            ),
-            onLeaveBack: batch => gsap.to(batch, { opacity: 0, y: 50, overwrite: true })
-        });
-
-        // 4. Partner Marquee Fade In
-        const marquee = document.querySelector('.partner-carousel');
-        if (marquee) {
-            gsap.fromTo(marquee,
-                { opacity: 0 },
-                {
+        staggerConfigs.forEach(config => {
+            const elements = document.querySelectorAll(config.selector);
+            if (elements.length > 0) {
+                gsap.from(elements, {
                     scrollTrigger: {
-                        trigger: marquee,
-                        start: 'top 90%',
-                        toggleActions: 'play none none reverse'
-                    },
-                    opacity: 1,
-                    duration: 1.5
-                }
-            );
-        }
-
-        // 5. Contact Section
-        const contactInfo = document.querySelector('.contact-info');
-        if (contactInfo) {
-            gsap.fromTo(contactInfo,
-                { opacity: 0, x: -50 },
-                {
-                    scrollTrigger: {
-                        trigger: contactInfo,
+                        trigger: config.trigger,
                         start: 'top 80%',
                         toggleActions: 'play none none reverse'
                     },
-                    opacity: 1,
-                    x: 0,
+                    opacity: 0,
+                    x: config.x || 0,
+                    y: config.y || 0,
+                    scale: config.scale || 1,
                     duration: 1,
-                    ease: 'power3.out'
-                }
-            );
-        }
-
-        // Ensure Contact Form is also animating (checks if already setup, if not, sets it up)
-        // Ensure Contact Form is also animating (checks if already setup, if not, sets it up)
-        // const contactForm = document.querySelector('.contact-form-card');
-        // if (contactForm && !ScrollTrigger.getById('contactFormAnim')) {
-        //     gsap.fromTo(contactForm,
-        //         { opacity: 0, x: 50 },
-        //         {
-        //             scrollTrigger: {
-        //                 id: 'contactFormAnim',
-        //                 trigger: contactForm,
-        //                 start: 'top 80%',
-        //                 toggleActions: 'play none none reverse'
-        //             },
-        //             opacity: 1,
-        //             x: 0,
-        //             duration: 1,
-        //             ease: 'power3.out'
-        //         }
-        //     );
-        // }
+                    stagger: 0.2,
+                    ease: "power3.out"
+                });
+            }
+        });
     }
 
     setupInteractions() {
@@ -829,14 +774,54 @@ class App {
     }
 
     setupScrollEffects() {
-        // Parallax for hero content
-        window.addEventListener('scroll', () => {
-            const scrolled = window.scrollY;
-            const heroContent = document.querySelector('.hero-content');
-            if (heroContent) {
-                heroContent.style.transform = `translateY(${scrolled * 0.3}px)`;
-                heroContent.style.opacity = 1 - (scrolled / 500);
+        // Advanced Parallax for Hero
+        gsap.to(".hero-content", {
+            scrollTrigger: {
+                trigger: ".hero-ui",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            },
+            y: 200,
+            opacity: 0,
+            ease: "none"
+        });
+
+        // Floating animation for side stats
+        gsap.to(".stat-item", {
+            y: "random(-10, 10)",
+            duration: "random(2, 4)",
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            stagger: {
+                each: 0.5,
+                from: "random"
             }
+        });
+
+        // Magnetic effect for primary buttons
+        const magneticBtns = document.querySelectorAll('.cta-primary, .social-icon');
+        magneticBtns.forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                gsap.to(btn, {
+                    x: x * 0.3,
+                    y: y * 0.3,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+            btn.addEventListener('mouseleave', () => {
+                gsap.to(btn, {
+                    x: 0,
+                    y: 0,
+                    duration: 0.5,
+                    ease: "elastic.out(1, 0.3)"
+                });
+            });
         });
     }
 
