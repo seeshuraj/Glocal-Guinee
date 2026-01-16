@@ -4,25 +4,21 @@ export default defineConfig({
     build: {
         outDir: 'dist',
         sourcemap: false,
-        minify: 'terser',
         rollupOptions: {
             output: {
-                manualChunks: {
-                    vendor: ['vite']
-                }
+                manualChunks: undefined
             }
-        }
+        },
+        minify: 'terser'
     },
     server: {
         headers: {
             'Cache-Control': 'public, max-age=0, must-revalidate',
             'X-Content-Type-Options': 'nosniff',
-            'X-Frame-Options': 'DENY',
-            'X-XSS-Protection': '1; mode=block',
-            'Referrer-Policy': 'strict-origin-when-cross-origin'
+            'X-Frame-Options': 'SAMEORIGIN'
         }
     },
-    preview: {
-        port: 3000
+    optimizeDeps: {
+        include: ['three']
     }
 });
