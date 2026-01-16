@@ -19,6 +19,6 @@ export default defineConfig({
         }
     },
     optimizeDeps: {
-        include: ['three']
+        include: ['three', 'gsap', 'aos']
     }
 });
