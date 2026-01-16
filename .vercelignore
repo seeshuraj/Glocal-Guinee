@@ -1,0 +1,12 @@
+# Exclude local development files from Vercel deployment
+node_modules
+.git
+.gitignore
+README.md
+task.md
+implementation_plan.md
+walkthrough.md
+dist
+.vscode
+.idea
+*.log

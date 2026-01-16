@@ -1,6 +1,9 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+    esbuild: {
+        drop: ['console', 'debugger'],
+    },
     server: {
         headers: {
             'Cache-Control': 'public, max-age=0, must-revalidate',

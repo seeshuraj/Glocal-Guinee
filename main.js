@@ -102,11 +102,22 @@ class App {
     }
 
     init() {
-        // Initialize Animation Systems
+        // 1. Initial UI & Animation Setup
+        this.setupEntranceAnimations();
         this.setupScrollTrigger();
         this.setupScrollEffects();
 
-        // Remove loading screen FIRST for perceived performance
+        // 2. Component & Interaction Setup
+        this.setupInteractions();
+        this.setupFAQ();
+        this.setupContactForm();
+
+        // Fail-safe visibility for contact form card
+        gsap.set('.contact-form-card', { opacity: 1, x: 0, clearProps: 'all', delay: 2 });
+
+        ScrollTrigger.refresh();
+
+        // 3. Loading Sequence
         const loadingScreen = document.getElementById('loading-screen');
         if (loadingScreen) {
             setTimeout(() => {
@@ -114,25 +125,22 @@ class App {
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
                     loadingScreen.remove();
+                    ScrollTrigger.refresh();
                 }, 500);
             }, 1000);
         }
 
-        // Initialize Core Components
+        // 4. Heavy Assets Initialization
         try {
             this.assets.createLandscape();
         } catch (e) {
-            console.warn('3D background disabled');
+            console.warn('3D Background deferred or disabled');
         }
 
-        this.setupInteractions();
-        this.setupFAQ();
-        this.setupContactForm();
         this.animate();
     }
 
-    setupGSAPAnimations() {
-        // Text reveal animation for hero title
+    setupEntranceAnimations() {
         const heroTitle = document.getElementById('hero-title');
         if (heroTitle) {
             const text = heroTitle.textContent;
@@ -143,483 +151,28 @@ class App {
             gsap.from(heroTitle.querySelectorAll('.char'), {
                 y: 100,
                 opacity: 0,
-                duration: 0.8,
-                ease: 'power4.out',
-                stagger: 0.03,
-                delay: 0.3
+                duration: 1.2,
+                ease: "expo.out",
+                stagger: 0.05,
+                delay: 0.5
             });
         }
 
-        // Hero subtitle fade in
-        gsap.from('.hero-subtitle', {
-            opacity: 0,
-            y: 30,
-            duration: 1,
-            delay: 1.2,
-            ease: 'power2.out'
-        });
-
-        // Hero description fade in
-        gsap.from('.hero-description', {
-            opacity: 0,
-            y: 30,
-            duration: 1,
-            delay: 1.5,
-            ease: 'power2.out'
-        });
-
-        // CTA button entrance
-        gsap.from('.cta-primary', {
-            opacity: 0,
-            scale: 0.8,
-            duration: 0.8,
-            delay: 1.8,
-            ease: 'back.out(1.7)'
-        });
-
-        // Section titles animation with ScrollTrigger
-        const sectionTitles = document.querySelectorAll('.section-title');
-        sectionTitles.forEach((title, index) => {
-            gsap.fromTo(title,
-                {
-                    opacity: 0,
-                    y: 50
-                },
-                {
-                    scrollTrigger: {
-                        trigger: title,
-                        start: 'top 80%',
-                        end: 'top 50%',
-                        toggleActions: 'play none none reverse',
-                        markers: false
-                    },
-                    opacity: 1,
-                    y: 0,
-                    duration: 1,
-                    ease: 'power3.out'
-                }
-            );
-        });
-
-        // Product cards  with ScrollTrigger
-        const productCards = document.querySelectorAll('.product-card');
-        productCards.forEach((card, index) => {
-            gsap.fromTo(card,
-                {
-                    opacity: 0,
-                    y: 80,
-                    rotateY: -20
-                },
-                {
-                    scrollTrigger: {
-                        trigger: card,
-                        start: 'top 85%',
-                        end: 'top 60%',
-                        toggleActions: 'play none none reverse',
-                        markers: false
-                    },
-                    opacity: 1,
-                    y: 0,
-                    rotateY: 0,
-                    duration: 1,
-                    delay: index * 0.2,
-                    ease: 'power3.out'
-                }
-            );
-        });
-
-        // Process steps animation
-        const steps = document.querySelectorAll('.step');
-        steps.forEach((step, index) => {
-            gsap.fromTo(step,
-                {
-                    opacity: 0,
-                    y: 60
-                },
-                {
-                    scrollTrigger: {
-                        trigger: step,
-                        start: 'top 85%',
-                        toggleActions: 'play none none reverse'
-                    },
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.4,
-                    delay: index * 0.08,
-                    ease: 'power2.out'
-                }
-            );
-        });
-
-        // Stats counter animation - Sped up
-        gsap.utils.toArray('.stat-number').forEach(stat => {
-            const endValue = parseInt(stat.getAttribute('data-target'));
-            gsap.to(stat, {
-                scrollTrigger: {
-                    trigger: stat,
-                    start: 'top 85%', // Trigger slightly earlier
-                    toggleActions: 'play none none reverse'
-                },
-                innerHTML: endValue,
-                duration: 1.5, // Faster duration (was likely 2 or 3s)
-                snap: { innerText: 1 },
-                ease: 'power2.out',
-                onUpdate: function () {
-                    stat.innerHTML = Math.ceil(this.targets()[0].innerHTML) + '+';
-                }
-            });
-        });
-
-        // About section content
-        const aboutText = document.querySelector('.about-text');
-        if (aboutText) {
-            gsap.fromTo(aboutText,
-                {
-                    opacity: 0,
-                    x: -50
-                },
-                {
-                    scrollTrigger: {
-                        trigger: aboutText,
-                        start: 'top 80%',
-                        toggleActions: 'play none none reverse'
-                    },
-                    opacity: 1,
-                    x: 0,
-                    duration: 1,
-                    ease: 'power2.out'
-                }
-            );
-        }
-
-        // Contact form animation
-        const contactForm = document.querySelector('.contact-form-card');
-        if (contactForm) {
-            gsap.fromTo(contactForm,
-                {
-                    opacity: 0,
-                    x: 50
-                },
-                {
-                    scrollTrigger: {
-                        trigger: contactForm,
-                        start: 'top 80%',
-                        toggleActions: 'play none none reverse'
-                    },
-                    opacity: 1,
-                    x: 0,
-                    duration: 1,
-                    ease: 'power2.out'
-                }
-            );
-        }
-
-        // --- SCROLL-BASED IMAGE SEQUENCE (Video-like) ---
-        const initCanvasAnimation = () => {
-            const container = document.getElementById('cashew-canvas-container');
-            if (!container) return;
-
-            // Clear previous canvas if any
-            container.innerHTML = '';
-
-            // Create image containers with reliable sources
-            const stages = [
-                {
-                    src: 'https://images.unsplash.com/photo-1599596636750-7171d9d96c96?auto=format&fit=crop&w=1000&q=80',
-                    caption: 'Stage 1: Germination 🌱',
-                    desc: 'The journey begins with premium seeds in fertile soil.',
-                    fallbackColor: '#8D6E63'
-                },
-                {
-                    src: 'https://images.unsplash.com/photo-1596435061694-8742b8214db2?auto=format&fit=crop&w=1000&q=80',
-                    caption: 'Stage 2: Growth 🌿',
-                    desc: 'Nurtured by the Guinean sun, saplings grow strong.',
-                    fallbackColor: '#4CAF50'
-                },
-                {
-                    src: 'https://upload.wikimedia.org/wikipedia/commons/3/30/Cashew_apples_and_nuts.jpg',
-                    caption: 'Stage 3: Fruiting 🍎',
-                    desc: 'Vibrant Cashew Apples and raw nuts appear.',
-                    fallbackColor: '#ff6b6b'
-                },
-                {
-                    src: 'https://images.unsplash.com/photo-1543202996-339243764b82?auto=format&fit=crop&w=1000&q=80',
-                    caption: 'Stage 4: Harvest 🥜',
-                    desc: 'Ready for processing and global export.',
-                    fallbackColor: '#d97706'
-                }
-            ];
-
-            // Create DOM elements for images
-            stages.forEach((stage, i) => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'growth-stage';
-                wrapper.style.position = 'absolute';
-                wrapper.style.top = '0';
-                wrapper.style.left = '0';
-                wrapper.style.width = '100%';
-                wrapper.style.height = '100%';
-                wrapper.style.opacity = i === 0 ? '1' : '0';
-                wrapper.style.transition = 'opacity 0.5s ease';
-                wrapper.style.display = 'flex';
-                wrapper.style.flexDirection = 'column';
-                wrapper.style.justifyContent = 'center';
-                wrapper.style.alignItems = 'center';
-                wrapper.style.overflow = 'hidden';
-                wrapper.style.backgroundColor = '#f0f0f0'; // Base background
-
-                // Image
-                const img = document.createElement('img');
-                img.src = stage.src;
-                img.style.width = '100%';
-                img.style.height = '100%';
-                img.style.objectFit = 'cover';
-                img.style.position = 'absolute';
-                img.style.zIndex = '1';
-
-                // Error handling: if image fails, show colored block
-                img.onerror = () => {
-                    img.style.display = 'none';
-                    wrapper.style.backgroundColor = stage.fallbackColor;
-                    const errText = document.createElement('div');
-                    errText.innerText = '(Image Loading...)';
-                    errText.style.color = 'white';
-                    errText.style.zIndex = '2';
-                    errText.style.position = 'absolute';
-                    wrapper.appendChild(errText);
-                };
-
-                // Overlay text
-                const textOverlay = document.createElement('div');
-                textOverlay.style.position = 'absolute';
-                textOverlay.style.bottom = '20px';
-                textOverlay.style.left = '20px';
-                textOverlay.style.zIndex = '10';
-                textOverlay.style.background = 'rgba(255,255,255,0.95)';
-                textOverlay.style.padding = '15px 25px';
-                textOverlay.style.borderRadius = '15px';
-                textOverlay.style.boxShadow = '0 10px 30px rgba(0,0,0,0.2)';
-                textOverlay.style.maxWidth = '80%';
-                textOverlay.innerHTML = `
-                    <h3 style="color: #d97706; margin:0; font-size: 1.5rem;">${stage.caption}</h3>
-                    <p style="margin:5px 0 0; color: #444;">${stage.desc}</p>
-                `;
-
-                wrapper.appendChild(img);
-                wrapper.appendChild(textOverlay);
-                container.appendChild(wrapper);
-            });
-
-            // ScrollTrigger logic
-            ScrollTrigger.create({
-                trigger: '#cashew-canvas-container',
-                start: 'top top',
-                end: '+=3000', // Long scroll for "video" feel
-                pin: true,
-                scrub: 0.5,
-                onUpdate: (self) => {
-                    const progress = self.progress;
-                    const index = Math.min(Math.floor(progress * stages.length), stages.length - 1);
-
-                    // Show active stage, hide others
-                    const stageEls = container.querySelectorAll('.growth-stage');
-                    stageEls.forEach((el, i) => {
-                        if (i === index) {
-                            el.style.opacity = '1';
-                            el.style.transform = 'scale(1)';
-                        } else {
-                            el.style.opacity = '0';
-                            el.style.transform = 'scale(1.1)'; // Slight zoom effect for inactive
-                        }
-                    });
-                }
-            });
-        };
-        // initCanvasAnimation();
-
-        const initVideoScroll = () => {
-            const container = document.getElementById('cashew-canvas-container');
-            if (!container) return;
-
-            // Clear previous content
-            container.innerHTML = '';
-            container.style.backgroundColor = '#000';
-            container.style.height = '100vh'; // Enforce full screen height for the lock
-
-            // Create Video Element
-            const video = document.createElement('video');
-            video.src = 'videos/plant grow.mp4';
-            video.muted = true;
-            video.setAttribute('playsinline', '');
-            video.setAttribute('webkit-playsinline', ''); // For older iOS Safari
-            video.playsInline = true;
-            video.preload = "auto";
-            video.style.width = '100vw';
-            video.style.height = '100vh';
-            video.style.objectFit = 'cover';
-            video.style.position = 'absolute';
-            video.style.top = '0';
-            video.style.left = '0';
-
-            const loader = document.createElement('div');
-            loader.innerText = 'Loading Video...';
-            loader.style.position = 'absolute';
-            loader.style.top = '50%';
-            loader.style.left = '50%';
-            loader.style.transform = 'translate(-50%, -50%)';
-            loader.style.color = 'white';
-            loader.style.zIndex = '2';
-
-            container.appendChild(loader);
-            container.appendChild(video);
-
-            const startScroll = () => {
-                loader.style.display = 'none';
-                ScrollTrigger.create({
-                    trigger: '#cashew-canvas-container',
-                    start: 'top top',
-                    end: '+=800', // Faster scrub
-                    pin: true,
-                    anticipatePin: 1, // Smooth out pin entry
-                    scrub: 1,
-                    onUpdate: (self) => {
-                        if (video.duration) {
-                            video.currentTime = video.duration * self.progress;
-                        }
-                    }
-                });
-            };
-
-            video.addEventListener('loadedmetadata', startScroll);
-
-            // Fallback
-            setTimeout(() => {
-                if (loader.style.display !== 'none') startScroll();
-            }, 2000);
-        };
-        initVideoScroll();
-
-
-        // --- PARTNER & GLOBE INTERACTION ---
-        const initGlobeInteraction = () => {
-            const infoBoxes = document.querySelectorAll('.info-box');
-            const markers = document.querySelectorAll('.marker');
-
-            // Reset function
-            const resetMarkers = () => {
-                markers.forEach(m => m.classList.remove('active'));
-            };
-
-            infoBoxes.forEach(box => {
-                box.addEventListener('click', () => {
-                    resetMarkers();
-
-                    // 1. Get Country Name
-                    const countryName = box.querySelector('h3').innerText.replace(/[^a-zA-Z\s]/g, '').trim();
-                    console.log('Clicked country:', countryName);
-
-                    // 2. Find matching marker
-                    let targetMarker = null;
-                    markers.forEach(marker => {
-                        const title = marker.getAttribute('title');
-                        // Simple robust check: does marker title contain country name?
-                        if (title && title.includes(countryName)) {
-                            targetMarker = marker;
-                        }
-                        // Special case for Guinea (HQ)
-                        if (countryName.includes('Guinea') && title.includes('Guinea')) {
-                            targetMarker = marker;
-                        }
-                    });
-
-                    // 3. Highlight Logic
-                    if (targetMarker) {
-                        targetMarker.classList.add('active');
-                        // Scroll to globe
-                        const globeSection = document.getElementById('partners');
-                        if (globeSection) {
-                            globeSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }
-                    }
-                });
-            });
-        };
-        initGlobeInteraction();
-    }
-
-    setupContactForm() {
-        const form = document.getElementById('contact-form');
-        if (!form) return;
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const btnText = submitBtn.querySelector('.btn-text');
-            const spinner = submitBtn.querySelector('.spinner');
-
-            // 1. Loading State
-            submitBtn.disabled = true;
-            btnText.style.opacity = '0';
-            spinner.style.opacity = '1';
-            spinner.style.display = 'block';
-
-            // 2. Gather Data
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-
-            try {
-                // 3. Send to Formspree
-                const response = await fetch('https://formspree.io/f/xvzzzgjd', {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (response.ok) {
-                    // 4. Success State
-                    form.reset();
-                    btnText.innerText = 'Message Sent!';
-                    btnText.style.opacity = '1';
-                    spinner.style.opacity = '0';
-                    submitBtn.style.backgroundColor = '#4CAF50';
-
-                    setTimeout(() => {
-                        submitBtn.disabled = false;
-                        btnText.innerText = 'Send Message';
-                        submitBtn.style.backgroundColor = ''; // Reset color
-                    }, 5000);
-                } else {
-                    throw new Error('Form submission failed');
-                }
-            } catch (error) {
-                // 5. Error State
-                console.error('Submission Error:', error);
-                btnText.innerText = 'Error. Try Again.';
-                btnText.style.opacity = '1';
-                spinner.style.opacity = '0';
-                submitBtn.style.backgroundColor = '#f44336';
-
-                setTimeout(() => {
-                    submitBtn.disabled = false;
-                    btnText.innerText = 'Send Message';
-                    submitBtn.style.backgroundColor = '';
-                }, 3000);
-            }
-        });
+        const heroTl = gsap.timeline({ delay: 1.2 });
+        heroTl.from('.hero-subtitle', { opacity: 0, y: 30, duration: 1, ease: 'power3.out' })
+            .from('.hero-description', { opacity: 0, y: 30, duration: 1, ease: 'power3.out' }, '-=0.6')
+            .from('.cta-primary', { opacity: 0, scale: 0.8, duration: 1, ease: 'back.out(1.7)' }, '-=0.6')
+            .from('.stat-item', { opacity: 0, x: 50, duration: 1, stagger: 0.2, ease: 'power3.out' }, '-=1');
     }
 
     setupScrollTrigger() {
-        // 1. Hero Content Parallax (More advanced)
+        // Hero Content Parallax
         gsap.to(".hero-content", {
             scrollTrigger: {
                 trigger: ".hero-ui",
                 start: "top top",
                 end: "bottom top",
-                scrub: 1.5
+                scrub: 1
             },
             y: 150,
             opacity: 0,
@@ -627,12 +180,10 @@ class App {
             ease: "none"
         });
 
-        // 2. Section Header Stagger (Tagline + Title)
-        const headers = gsap.utils.toArray('.section-header');
-        headers.forEach(header => {
+        // Section Headers
+        gsap.utils.toArray('.section-header').forEach(header => {
             const tagline = header.querySelector('.section-tagline');
             const title = header.querySelector('.section-title');
-
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: header,
@@ -640,24 +191,24 @@ class App {
                     toggleActions: 'play none none reverse'
                 }
             });
-
             if (tagline) tl.from(tagline, { opacity: 0, y: 20, duration: 0.6, ease: "power2.out" });
             if (title) tl.from(title, { opacity: 0, y: 30, duration: 0.8, ease: "power3.out" }, "-=0.4");
         });
 
-        // 3. Staggered Reveals for Lists and Grids
-        const staggerConfigs = [
-            { selector: '.milestones li', trigger: '.about-grid', x: -30 },
-            { selector: '.step', trigger: '.process-steps', y: 50 },
-            { selector: '.product-card', trigger: '.product-grid', y: 40, scale: 0.9 },
-            { selector: '.info-box', trigger: '.info-grid', y: 30 },
-            { selector: '.info-item', trigger: '.contact-wrap', x: -30 }
+        // Staggered Reveals
+        const configs = [
+            { selector: '.milestones li', trigger: '.about-grid', x: -50 },
+            { selector: '.step', trigger: '.process-steps', y: 60, stagger: 0.2 },
+            { selector: '.product-card', trigger: '.product-grid', scale: 0.8, stagger: 0.25 },
+            { selector: '.info-box', trigger: '.info-grid', y: 40, stagger: 0.2 },
+            { selector: '.info-item', trigger: '.contact-wrap', x: -30, stagger: 0.2 },
+            { selector: '.contact-form-card', trigger: '.contact-wrap', x: 40 }
         ];
 
-        staggerConfigs.forEach(config => {
-            const elements = document.querySelectorAll(config.selector);
-            if (elements.length > 0) {
-                gsap.from(elements, {
+        configs.forEach(config => {
+            const els = document.querySelectorAll(config.selector);
+            if (els.length > 0) {
+                gsap.from(els, {
                     scrollTrigger: {
                         trigger: config.trigger,
                         start: 'top 80%',
@@ -668,38 +219,69 @@ class App {
                     y: config.y || 0,
                     scale: config.scale || 1,
                     duration: 1,
-                    stagger: 0.2,
-                    ease: "power3.out"
+                    stagger: config.stagger || 0,
+                    ease: "power2.out"
                 });
             }
+        });
+
+        // Stats Counters
+        gsap.utils.toArray('.stat-number').forEach(stat => {
+            const target = parseInt(stat.getAttribute('data-target'));
+            gsap.to(stat, {
+                scrollTrigger: {
+                    trigger: stat,
+                    start: 'top 85%'
+                },
+                innerHTML: target,
+                duration: 2,
+                snap: { innerText: 1 },
+                ease: 'power1.out',
+                onUpdate: function () {
+                    stat.innerHTML = Math.ceil(this.targets()[0].innerHTML) + '+';
+                }
+            });
+        });
+    }
+
+    setupScrollEffects() {
+        gsap.to(".stat-item", {
+            y: "random(-10, 10)",
+            duration: "random(2, 4)",
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            stagger: { each: 0.5, from: "random" }
+        });
+
+        const magneticEls = document.querySelectorAll('.cta-primary, .social-icon, .hamburger');
+        magneticEls.forEach(el => {
+            el.addEventListener('mousemove', (e) => {
+                const rect = el.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                gsap.to(el, { x: x * 0.4, y: y * 0.4, duration: 0.3, ease: "power2.out" });
+            });
+            el.addEventListener('mouseleave', () => {
+                gsap.to(el, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1, 0.3)" });
+            });
         });
     }
 
     setupInteractions() {
-        // Navbar scroll effect
         window.addEventListener('scroll', () => {
             const nav = document.querySelector('.navbar');
-            if (window.scrollY > 50) {
-                nav.classList.add('scrolled');
-            } else {
-                nav.classList.remove('scrolled');
-            }
+            if (nav) nav.classList.toggle('scrolled', window.scrollY > 50);
         });
 
-        // Mobile Menu Toggle
         const hamburger = document.querySelector('.hamburger');
         const mobileMenu = document.querySelector('.mobile-menu-overlay');
-        const mobileLinks = document.querySelectorAll('.mobile-nav-links a');
-
         if (hamburger && mobileMenu) {
             hamburger.addEventListener('click', () => {
-                console.log('Hamburger clicked');
                 mobileMenu.classList.toggle('active');
                 hamburger.classList.toggle('toggle');
             });
-
-            // Close menu when a link is clicked
-            mobileLinks.forEach(link => {
+            mobileMenu.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', () => {
                     mobileMenu.classList.remove('active');
                     hamburger.classList.remove('toggle');
@@ -707,130 +289,127 @@ class App {
             });
         }
 
-        // CTA interactions
-        const mainCta = document.getElementById('main-cta');
-        if (mainCta) {
-            mainCta.addEventListener('click', () => {
-                document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
-            });
-        }
-
-        // Product selection
-        const productCards = document.querySelectorAll('.product-card');
-        productCards.forEach(card => {
+        document.querySelectorAll('.product-card').forEach(card => {
             card.addEventListener('click', () => {
                 const product = card.getAttribute('data-product');
-                this.productViewer.setProduct(product);
-
-                // Scroll to viewer
-                document.getElementById('product-360-viewer').scrollIntoView({ behavior: 'smooth' });
+                if (this.productViewer) {
+                    this.productViewer.setProduct(product);
+                    document.getElementById('product-360-viewer')?.scrollIntoView({ behavior: 'smooth' });
+                }
             });
         });
 
-        // Counter animation
-        this.setupCounters();
+        this.initGlobeInteraction();
+        this.initVideoScroll();
     }
 
-    setupCounters() {
-        const counters = document.querySelectorAll('.counter');
-        const options = { threshold: 1 };
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const target = parseInt(entry.target.getAttribute('data-target'));
-                    gsap.to(entry.target, {
-                        innerText: target,
-                        duration: 2,
-                        snap: { innerText: 1 },
-                        ease: "power2.out"
-                    });
-                    observer.unobserve(entry.target);
+    initGlobeInteraction() {
+        const infoBoxes = document.querySelectorAll('.info-box');
+        const markers = document.querySelectorAll('.marker');
+        infoBoxes.forEach(box => {
+            box.addEventListener('click', () => {
+                markers.forEach(m => m.classList.remove('active'));
+                const country = box.querySelector('h3').innerText.replace(/[^a-zA-Z\s]/g, '').trim();
+                let target = null;
+                markers.forEach(m => {
+                    const title = m.getAttribute('title');
+                    if (title && (title.includes(country) || (country.includes('Guinea') && title.includes('Guinea')))) {
+                        target = m;
+                    }
+                });
+                if (target) {
+                    target.classList.add('active');
+                    document.getElementById('partners')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             });
-        }, options);
+        });
+    }
 
-        counters.forEach(counter => observer.observe(counter));
+    initVideoScroll() {
+        const container = document.getElementById('cashew-canvas-container');
+        if (!container) return;
+        container.innerHTML = '';
+        container.style.backgroundColor = '#000';
+        const video = document.createElement('video');
+        video.src = '/videos/plant-grow-optimized.mp4';
+        video.muted = true;
+        video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
+        video.preload = "auto";
+        video.style.cssText = 'width: 100vw; height: 100vh; object-fit: cover; position: absolute; top:0; left:0;';
+        const loader = document.createElement('div');
+        loader.innerText = 'Initializing Sequence...';
+        loader.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;';
+        container.appendChild(loader);
+        container.appendChild(video);
+        video.addEventListener('loadedmetadata', () => {
+            loader.style.display = 'none';
+            ScrollTrigger.create({
+                trigger: '#cashew-canvas-container',
+                start: 'top top',
+                end: '+=800',
+                pin: true,
+                scrub: 1,
+                onUpdate: (self) => { if (video.duration) video.currentTime = video.duration * self.progress; }
+            });
+        });
     }
 
     setupFAQ() {
-        const faqItems = document.querySelectorAll('.faq-item');
-        faqItems.forEach(item => {
+        document.querySelectorAll('.faq-item').forEach(item => {
             item.addEventListener('click', () => {
                 const answer = item.querySelector('.faq-answer');
                 const isOpen = item.classList.contains('active');
-
-                // Close others
-                faqItems.forEach(i => {
+                document.querySelectorAll('.faq-item').forEach(i => {
                     i.classList.remove('active');
-                    i.querySelector('.faq-answer').style.maxHeight = null;
+                    const ans = i.querySelector('.faq-answer');
+                    if (ans) ans.style.maxHeight = null;
                 });
-
                 if (!isOpen) {
                     item.classList.add('active');
-                    answer.style.maxHeight = answer.scrollHeight + "px";
+                    if (answer) answer.style.maxHeight = answer.scrollHeight + "px";
                 }
             });
         });
     }
 
-    setupScrollEffects() {
-        // Advanced Parallax for Hero
-        gsap.to(".hero-content", {
-            scrollTrigger: {
-                trigger: ".hero-ui",
-                start: "top top",
-                end: "bottom top",
-                scrub: true
-            },
-            y: 200,
-            opacity: 0,
-            ease: "none"
-        });
-
-        // Floating animation for side stats
-        gsap.to(".stat-item", {
-            y: "random(-10, 10)",
-            duration: "random(2, 4)",
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut",
-            stagger: {
-                each: 0.5,
-                from: "random"
+    setupContactForm() {
+        const form = document.getElementById('contact-form');
+        if (!form) return;
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const btnText = submitBtn?.querySelector('.btn-text');
+            const spinner = submitBtn?.querySelector('.spinner');
+            if (submitBtn) submitBtn.disabled = true;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            try {
+                const response = await fetch('https://formspree.io/f/xvzzzgjd', {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (response.ok) {
+                    form.reset();
+                    if (btnText) btnText.innerText = 'Message Sent!';
+                }
+            } catch (error) {
+                if (btnText) btnText.innerText = 'Error. Try Again.';
+            } finally {
+                setTimeout(() => {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        if (btnText) btnText.innerText = 'Send Message';
+                    }
+                }, 3000);
             }
-        });
-
-        // Magnetic effect for primary buttons
-        const magneticBtns = document.querySelectorAll('.cta-primary, .social-icon');
-        magneticBtns.forEach(btn => {
-            btn.addEventListener('mousemove', (e) => {
-                const rect = btn.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
-                gsap.to(btn, {
-                    x: x * 0.3,
-                    y: y * 0.3,
-                    duration: 0.3,
-                    ease: "power2.out"
-                });
-            });
-            btn.addEventListener('mouseleave', () => {
-                gsap.to(btn, {
-                    x: 0,
-                    y: 0,
-                    duration: 0.5,
-                    ease: "elastic.out(1, 0.3)"
-                });
-            });
         });
     }
 
     animate() {
         requestAnimationFrame(() => this.animate());
-
-        // Simple rotation for some basic 3D elements if they were in view
         if (this.productViewer) this.productViewer.render();
-
         this.scene.render();
     }
 }
