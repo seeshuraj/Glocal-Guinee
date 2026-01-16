@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glocal Guinée - Premium Agricultural Processing</title>
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="stylesheet" href="style.css?v=4">
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;600&display=swap"
@@ -85,11 +85,11 @@
                 <span class="logo-text">GLOCAL <span>GUINEE</span></span>
             </div>
 
-            <div class="hamburger">
+            <button class="hamburger" aria-label="Toggle Navigation Menu" title="Open Menu">
                 <span class="bar"></span>
                 <span class="bar"></span>
                 <span class="bar"></span>
-            </div>
+            </button>
 
             <div class="nav-links">
                 <a href="#home">Home</a>
@@ -406,18 +406,20 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="contact-form-card" data-aos="fade-left">
+                        <div class="contact-form-card">
                             <form id="contact-form" class="animated-form">
                                 <div class="form-group">
-                                    <input type="text" id="name" placeholder="Full Name" required>
+                                    <input type="text" id="name" name="name" placeholder="Full Name" required
+                                        autocomplete="name">
                                     <span class="bar"></span>
                                 </div>
                                 <div class="form-group">
-                                    <input type="email" id="email" placeholder="Email Address" required>
+                                    <input type="email" id="email" name="email" placeholder="Email Address" required
+                                        autocomplete="email">
                                     <span class="bar"></span>
                                 </div>
                                 <div class="form-group">
-                                    <select id="interest">
+                                    <select id="interest" name="interest" aria-label="Select Product Interest">
                                         <option value="">Interested In...</option>
                                         <option value="sesame">Sesame Seeds</option>
                                         <option value="cashew">Raw Cashew Nuts</option>
@@ -425,10 +427,13 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <textarea id="message" placeholder="Your Message" required></textarea>
+                                    <textarea id="message" name="message" placeholder="Your Message"
+                                        required></textarea>
                                     <span class="bar"></span>
                                 </div>
-                                <button type="submit" class="cta-primary btn-submit">
+                                <button type="submit" id="form-submit-btn" class="cta-primary btn-submit"
+                                    aria-label="Send Message"
+                                    style="opacity: 1 !important; visibility: visible !important; display: flex !important;">
                                     <span class="btn-text">Send Message</span>
                                     <span class="spinner"></span>
                                 </button>
@@ -443,10 +448,10 @@
             <div class="footer-content container">
                 <div class="footer-logo">GLOCAL <span>GUINEE</span></div>
                 <div class="social-links">
-                    <a href="#" class="social-icon">FB</a>
-                    <a href="#" class="social-icon">LI</a>
-                    <a href="#" class="social-icon">WA</a>
-                    <a href="#" class="social-icon">IG</a>
+                    <a href="#" class="social-icon" aria-label="Facebook">FB</a>
+                    <a href="#" class="social-icon" aria-label="LinkedIn">LI</a>
+                    <a href="#" class="social-icon" aria-label="WhatsApp">WA</a>
+                    <a href="#" class="social-icon" aria-label="Instagram">IG</a>
                 </div>
                 <p class="copyright">&copy; 2026 GLOCAL GUINEE SARLU. All Rights Reserved.</p>
             </div>

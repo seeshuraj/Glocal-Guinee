@@ -467,6 +467,8 @@ class App {
             const video = document.createElement('video');
             video.src = 'videos/plant grow.mp4';
             video.muted = true;
+            video.setAttribute('playsinline', '');
+            video.setAttribute('webkit-playsinline', ''); // For older iOS Safari
             video.playsInline = true;
             video.preload = "auto";
             video.style.width = '100vw';
@@ -562,7 +564,75 @@ class App {
         initGlobeInteraction();
     }
 
+    setupContactForm() {
+        const form = document.getElementById('contact-form');
+        if (!form) return;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const btnText = submitBtn.querySelector('.btn-text');
+            const spinner = submitBtn.querySelector('.spinner');
+
+            // 1. Loading State
+            submitBtn.disabled = true;
+            btnText.style.opacity = '0';
+            spinner.style.opacity = '1';
+            spinner.style.display = 'block';
+
+            // 2. Gather Data
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                // 3. Send to Formspree
+                const response = await fetch('https://formspree.io/f/xvzzzgjd', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    // 4. Success State
+                    form.reset();
+                    btnText.innerText = 'Message Sent!';
+                    btnText.style.opacity = '1';
+                    spinner.style.opacity = '0';
+                    submitBtn.style.backgroundColor = '#4CAF50';
+
+                    setTimeout(() => {
+                        submitBtn.disabled = false;
+                        btnText.innerText = 'Send Message';
+                        submitBtn.style.backgroundColor = ''; // Reset color
+                    }, 5000);
+                } else {
+                    throw new Error('Form submission failed');
+                }
+            } catch (error) {
+                // 5. Error State
+                console.error('Submission Error:', error);
+                btnText.innerText = 'Error. Try Again.';
+                btnText.style.opacity = '1';
+                spinner.style.opacity = '0';
+                submitBtn.style.backgroundColor = '#f44336';
+
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    btnText.innerText = 'Send Message';
+                    submitBtn.style.backgroundColor = '';
+                }, 3000);
+            }
+        });
+    }
+
     setupSiteAnimations() {
+        // Initialize Contact Form Logic
+        this.setupContactForm();
+
         // 1. Generic Section Headers Fade Up
         const headers = gsap.utils.toArray('.section-header');
         headers.forEach(header => {
@@ -639,24 +709,25 @@ class App {
         }
 
         // Ensure Contact Form is also animating (checks if already setup, if not, sets it up)
-        const contactForm = document.querySelector('.contact-form-card');
-        if (contactForm && !ScrollTrigger.getById('contactFormAnim')) {
-            gsap.fromTo(contactForm,
-                { opacity: 0, x: 50 },
-                {
-                    scrollTrigger: {
-                        id: 'contactFormAnim',
-                        trigger: contactForm,
-                        start: 'top 80%',
-                        toggleActions: 'play none none reverse'
-                    },
-                    opacity: 1,
-                    x: 0,
-                    duration: 1,
-                    ease: 'power3.out'
-                }
-            );
-        }
+        // Ensure Contact Form is also animating (checks if already setup, if not, sets it up)
+        // const contactForm = document.querySelector('.contact-form-card');
+        // if (contactForm && !ScrollTrigger.getById('contactFormAnim')) {
+        //     gsap.fromTo(contactForm,
+        //         { opacity: 0, x: 50 },
+        //         {
+        //             scrollTrigger: {
+        //                 id: 'contactFormAnim',
+        //                 trigger: contactForm,
+        //                 start: 'top 80%',
+        //                 toggleActions: 'play none none reverse'
+        //             },
+        //             opacity: 1,
+        //             x: 0,
+        //             duration: 1,
+        //             ease: 'power3.out'
+        //         }
+        //     );
+        // }
     }
 
     setupInteractions() {
