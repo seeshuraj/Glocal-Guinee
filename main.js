@@ -226,22 +226,38 @@ class App {
         });
 
         // Stats Counters
-        gsap.utils.toArray('.stat-number').forEach(stat => {
+        gsap.utils.toArray('.counter').forEach(stat => {
             const target = parseInt(stat.getAttribute('data-target'));
+            if (isNaN(target)) return;
+
             gsap.to(stat, {
                 scrollTrigger: {
                     trigger: stat,
-                    start: 'top 85%'
+                    start: 'top 90%',
+                    toggleActions: 'play none none none'
                 },
-                innerHTML: target,
+                innerText: target,
                 duration: 2,
                 snap: { innerText: 1 },
-                ease: 'power1.out',
+                ease: 'power2.out',
                 onUpdate: function () {
-                    stat.innerHTML = Math.ceil(this.targets()[0].innerHTML) + '+';
+                    stat.innerText = Math.floor(stat.innerText) + '+';
                 }
             });
         });
+
+        // Fail-safe: Reveal hidden elements after 5 seconds if JS/ScrollTrigger hangs
+        setTimeout(() => {
+            gsap.to('.step, .counter', {
+                opacity: 1,
+                y: 0,
+                stagger: 0.1,
+                duration: 1,
+                overwrite: 'auto',
+                ease: "power2.out"
+            });
+        }, 5000);
+
     }
 
     setupScrollEffects() {

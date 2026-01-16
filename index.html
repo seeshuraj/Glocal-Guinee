@@ -11,56 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;600&display=swap"
         rel="stylesheet">
     <!-- GSAP and Three.js removed (bundled in main.js) -->
-    <style>
-        /* CRITICAL FIXES - INTERNAL STYLE TO BYPASS CACHE */
 
-        /* 1. Hide the empty 3D process container to fix the huge gap */
-        .process-3d-visual,
-        #process-3d {
-            display: none !important;
-            height: 0 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
-        .process-steps {
-            margin-top: 2rem !important;
-            /* Ensure nice spacing after removing the gap */
-        }
-
-        /* 2. Globe Styling */
-        .world-map path {
-            fill-opacity: 0.8;
-            transition: all 0.3s ease;
-        }
-
-        .world-map path:hover {
-            fill: #a8dfbc !important;
-            /* Green highlight on hover */
-            filter: drop-shadow(0 0 5px rgba(168, 223, 188, 0.5));
-        }
-
-        /* 3. Cashew Animation Visibility */
-        .cashew-fruit {
-            font-size: 5rem !important;
-            top: -30px !important;
-            opacity: 1 !important;
-            /* Force visible for testing if JS fails */
-            display: block !important;
-            z-index: 100 !important;
-            filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.3));
-        }
-
-        /* 4. Product Card Images */
-        .card-back {
-            background-color: #222 !important;
-            z-index: 2 !important;
-        }
-
-        .card-back::before {
-            background: rgba(0, 0, 0, 0.5) !important;
-        }
-    </style>
 </head>
 
 <body>
@@ -135,11 +86,11 @@
                     </div>
                 </div>
                 <div class="side-stats-mini">
-                    <div class="stat-item" data-aos="fade-up">
+                    <div class="stat-item">
                         <span class="stat-value counter" data-target="15">0</span>
                         <span class="stat-label">YEARS EXP</span>
                     </div>
-                    <div class="stat-item" data-aos="fade-up" data-aos-delay="100">
+                    <div class="stat-item" data-aos-delay="100">
                         <span class="stat-value counter" data-target="4">0</span>
                         <span class="stat-label">GLOBAL PORTS</span>
                     </div>
@@ -149,12 +100,12 @@
             <!-- ABOUT US SECTION -->
             <section id="about" class="section">
                 <div class="container">
-                    <div class="section-header" data-aos="fade-up">
+                    <div class="section-header">
                         <h2 class="section-title">Established Excellence</h2>
                         <p class="section-tagline">Our Journey from 2008 to Today</p>
                     </div>
                     <div class="about-grid">
-                        <div class="about-text" data-aos="fade-right">
+                        <div class="about-text">
                             <p>GLOCAL GUINEE SARLU has been a cornerstone of Guinea's export sector since 2008. We pride
                                 ourselves on ethical sourcing and premium quality control.</p>
                             <ul class="milestones">
@@ -164,7 +115,7 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="about-image" data-aos="zoom-in">
+                        <div class="about-image">
                             <img src="https://placehold.co/800x600/e6f3ff/000000?text=Premium+Guinean+Agriculture"
                                 alt="Guinean Agriculture"
                                 onerror="this.src='https://via.placeholder.com/800x600?text=Agriculture+Fallback'"
@@ -177,30 +128,30 @@
             <!-- PROCESS SECTION -->
             <section id="process" class="section dark-bg">
                 <div class="container">
-                    <div class="section-header" data-aos="fade-up">
+                    <div class="section-header">
                         <h2 class="section-title">How We Function</h2>
                         <p class="section-tagline">A Seamless Supply Chain from Farm to Port</p>
                     </div>
-                    <div class="process-3d-visual" id="process-3d" data-aos="fade-in">
+                    <div class="process-3d-visual" id="process-3d">
                         <!-- 3D Supply Chain Diagram -->
                     </div>
                     <div class="process-steps">
-                        <div class="step" data-aos="fade-up" data-aos-delay="0">
+                        <div class="step" data-aos-delay="0">
                             <span class="step-num">01</span>
                             <h3>Sourcing</h3>
                             <p>Directly from local farmers in Guinea center.</p>
                         </div>
-                        <div class="step" data-aos="fade-up" data-aos-delay="100">
+                        <div class="step" data-aos-delay="100">
                             <span class="step-num">02</span>
                             <h3>Processing</h3>
                             <p>State-to-the-art cleaning and drying facilities.</p>
                         </div>
-                        <div class="step" data-aos="fade-up" data-aos-delay="200">
+                        <div class="step" data-aos-delay="200">
                             <span class="step-num">03</span>
                             <h3>Quality Check</h3>
                             <p>Rigorous SGS/Bureau Veritas inspections.</p>
                         </div>
-                        <div class="step" data-aos="fade-up" data-aos-delay="300">
+                        <div class="step" data-aos-delay="300">
                             <span class="step-num">04</span>
                             <h3>Shipping</h3>
                             <p>Exporting to Turkey, China, India, and Vietnam.</p>
@@ -212,12 +163,12 @@
             <!-- PRODUCTS SECTION -->
             <section id="products" class="section">
                 <div class="container">
-                    <div class="section-header" data-aos="fade-up">
+                    <div class="section-header">
                         <h2 class="section-title">Our Commodities</h2>
                         <p class="section-tagline">Premium Quality, Sustainably Sourced</p>
                     </div>
                     <div class="product-grid">
-                        <div class="product-card" data-aos="flip-left" data-product="sesame">
+                        <div class="product-card" data-product="sesame">
                             <div class="card-inner">
                                 <div class="card-front">
                                     <div class="product-icon">🌾</div>
@@ -234,7 +185,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="product-card" data-aos="flip-left" data-aos-delay="100" data-product="cashew">
+                        <div class="product-card" data-aos-delay="100" data-product="cashew">
                             <div class="card-inner">
                                 <div class="card-front">
                                     <div class="product-icon">🥜</div>
@@ -251,7 +202,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="product-card" data-aos="flip-left" data-aos-delay="200" data-product="cocoa">
+                        <div class="product-card" data-aos-delay="200" data-product="cocoa">
                             <div class="card-inner">
                                 <div class="card-front">
                                     <div class="product-icon">🍫</div>
@@ -283,13 +234,13 @@
             <!-- PARTNERS SECTION -->
             <section id="partners" class="section dark-bg">
                 <div class="container text-center">
-                    <div class="section-header" data-aos="fade-up">
+                    <div class="section-header">
                         <h2 class="section-title">Global Trade Network</h2>
                         <p class="section-tagline">Connecting Guinea to the World</p>
                     </div>
 
                     <!-- USER PROVIDED 3D GLOBE -->
-                    <div class="globe-3d" data-aos="zoom-in">
+                    <div class="globe-3d">
                         <div class="rotating-globe">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg"
                                 class="world-map" style="position: absolute; top:0; left:0; pointer-events:none;"
@@ -318,28 +269,27 @@
                     </div>
 
                     <div class="info-grid">
-                        <div class="info-box" style="border-color: #d97706; background: #fffaf0;" data-aos="fade-up"
-                            data-aos-delay="0">
+                        <div class="info-box" style="border-color: #d97706; background: #fffaf0;" data-aos-delay="0">
                             <h3 style="color: #d97706;">🇬🇳 Guinea (HQ)</h3>
                             <p>Sourcing & Processing</p>
                             <p style="font-size: 0.8em; color: #d97706; margin-top: 5px;">Heart of Operations</p>
                         </div>
-                        <div class="info-box" data-aos="fade-up" data-aos-delay="100">
+                        <div class="info-box" data-aos-delay="100">
                             <h3>🇮🇳 India</h3>
                             <p>Sesame | Cashew | Cocoa</p>
                             <p style="font-size: 0.8em; color: #1e3c72; margin-top: 5px;">Key Market</p>
                         </div>
-                        <div class="info-box" data-aos="fade-up" data-aos-delay="200">
+                        <div class="info-box" data-aos-delay="200">
                             <h3>🇹🇷 Turkey</h3>
                             <p>Sesame | Cashew</p>
                             <p style="font-size: 0.8em; color: #1e3c72; margin-top: 5px;">Regional Hub</p>
                         </div>
-                        <div class="info-box" data-aos="fade-up" data-aos-delay="300">
+                        <div class="info-box" data-aos-delay="300">
                             <h3>🇻🇳 Vietnam</h3>
                             <p>Sesame | Cashew | Cocoa</p>
                             <p style="font-size: 0.8em; color: #1e3c72; margin-top: 5px;">Growth Market</p>
                         </div>
-                        <div class="info-box" data-aos="fade-up" data-aos-delay="400">
+                        <div class="info-box" data-aos-delay="400">
                             <h3>🇨🇳 China</h3>
                             <p>Sesame | Cashew | Cocoa</p>
                             <p style="font-size: 0.8em; color: #1e3c72; margin-top: 5px;">Major Market</p>
@@ -348,8 +298,7 @@
 
                     <!-- PARTNER MARQUEE -->
                     <div class="partner-carousel"
-                        style="margin-top: 4rem; overflow: hidden; white-space: nowrap; position: relative;"
-                        data-aos="fade-in">
+                        style="margin-top: 4rem; overflow: hidden; white-space: nowrap; position: relative;">
                         <div class="marquee-content">
                             <span class="partner-logo">India</span>
                             <span class="partner-logo">Turkey</span>
@@ -367,12 +316,12 @@
             <!-- CONTACT SECTION -->
             <section id="contact" class="section">
                 <div class="container">
-                    <div class="section-header" data-aos="fade-up">
+                    <div class="section-header">
                         <h2 class="section-title">Get In Touch</h2>
                         <p class="section-tagline">Start your agricultural partnership today</p>
                     </div>
                     <div class="contact-wrap">
-                        <div class="contact-info" data-aos="fade-right">
+                        <div class="contact-info">
                             <div class="info-item">
                                 <div class="icon">📍</div>
                                 <div>
