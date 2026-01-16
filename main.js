@@ -101,8 +101,10 @@ class App {
         this.init();
     }
 
+
     init() {
         // 1. Initial UI & Animation Setup
+        this.setupBackgroundParticles();
         this.setupEntranceAnimations();
         this.setupScrollTrigger();
         this.setupScrollEffects();
@@ -117,7 +119,7 @@ class App {
 
         ScrollTrigger.refresh();
 
-        // 3. Loading Sequence
+        // 3. Loading Sequence & Stats Trigger
         const loadingScreen = document.getElementById('loading-screen');
         if (loadingScreen) {
             setTimeout(() => {
@@ -125,9 +127,12 @@ class App {
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
                     loadingScreen.remove();
+                    this.startPostLoadingAnimations();
                     ScrollTrigger.refresh();
                 }, 500);
             }, 1000);
+        } else {
+            this.startPostLoadingAnimations();
         }
 
         // 4. Heavy Assets Initialization
@@ -140,7 +145,104 @@ class App {
         this.animate();
     }
 
+    setupBackgroundParticles() {
+        const container = document.getElementById('particles-container');
+        if (!container) return;
+
+        const symbols = ['🌾', '🥜', '🍫', '🍃', '✨'];
+        const particleCount = 20;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'floating-particle';
+            particle.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            const size = 15 + Math.random() * 20;
+            const duration = 10 + Math.random() * 20;
+            const delay = Math.random() * -20;
+
+            particle.style.left = `${x}%`;
+            particle.style.top = `${y}%`;
+            particle.style.fontSize = `${size}px`;
+
+            container.appendChild(particle);
+
+            gsap.to(particle, {
+                y: 'random(-100, 100)',
+                x: 'random(-50, 50)',
+                rotation: 'random(-360, 360)',
+                duration: duration,
+                repeat: -1,
+                yoyo: true,
+                ease: 'sine.inOut',
+                delay: delay
+            });
+        }
+    }
+
+    startPostLoadingAnimations() {
+        // Trigger Stats Counter only after loader is gone
+        gsap.utils.toArray('.counter').forEach(stat => {
+            const target = parseInt(stat.getAttribute('data-target'));
+            if (isNaN(target)) return;
+
+            gsap.to(stat, {
+                scrollTrigger: {
+                    trigger: stat,
+                    start: 'top 95%',
+                    toggleActions: 'play none none none'
+                },
+                innerText: target,
+                duration: 2.5,
+                snap: { innerText: 1 },
+                ease: 'power3.out',
+                onUpdate: function () {
+                    stat.innerText = Math.floor(stat.innerText) + '+';
+                }
+            });
+        });
+
+        // Entrance animation for hero content
+        gsap.from('.hero-content > *', {
+            y: 30,
+            opacity: 0,
+            duration: 1,
+            stagger: 0.2,
+            ease: 'power3.out'
+        });
+    }
+
     setupEntranceAnimations() {
+        // Mouse parallax for hero
+        const heroWrapper = document.querySelector('.hero-parallax-wrapper');
+        if (heroWrapper) {
+            window.addEventListener('mousemove', (e) => {
+                const { clientX, clientY } = e;
+                const xPos = (clientX / window.innerWidth - 0.5) * 30;
+                const yPos = (clientY / window.innerHeight - 0.5) * 30;
+
+                gsap.to(heroWrapper, {
+                    x: xPos,
+                    y: yPos,
+                    duration: 1,
+                    ease: 'power2.out'
+                });
+            });
+        }
+
+        // Section reveal animations
+        const revealSections = document.querySelectorAll('.section');
+        revealSections.forEach(section => {
+            section.classList.add('section-reveal');
+            ScrollTrigger.create({
+                trigger: section,
+                start: 'top 80%',
+                onEnter: () => section.classList.add('active')
+            });
+        });
+
         const heroTitle = document.getElementById('hero-title');
         if (heroTitle) {
             const text = heroTitle.textContent;
