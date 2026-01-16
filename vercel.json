@@ -1,7 +1,6 @@
 {
   "buildCommand": "npm install && npx vite build",
   "outputDirectory": "dist",
-  "nodeVersion": "18.x",
   "rewrites": [
     {
       "source": "/(.*)",
