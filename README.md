@@ -31,7 +31,7 @@ This project is optimized for deployment on **Vercel**.
 The project includes a `vercel.json` file that handles:
 - **Build Settings**: Automatically runs `npm run build` and serves from the `dist` folder.
 - **Security Headers**: Implements strict CSP, XSS protection, and frame options.
-- **Performance**: High-performance caching for hashed assets in the `assets/` directory.
+- **Performance**: High-performance caching for hashed assets in the `assets/` directory and public media.
 
 ### How to Deploy
 1. Push your changes to GitHub.
