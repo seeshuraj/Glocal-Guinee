@@ -7,6 +7,8 @@ import { Physics } from './src/Physics.js';
 import { Particles } from './src/Particles.js';
 
 gsap.registerPlugin(ScrollTrigger);
+ScrollTrigger.config({ ignoreMobileResize: true });
+ScrollTrigger.normalizeScroll(true); // Fix key mobile scroll jitter issues
 
 class ProductViewer {
     constructor(containerId, assets) {
@@ -100,14 +102,8 @@ class App {
     }
 
     init() {
-        // Initialize AOS
-        if (window.AOS) {
-            window.AOS.init({
-                duration: 800,
-                offset: 50,
-                once: false
-            });
-        }
+        // Initialize Site-Wide Animations
+        this.setupSiteAnimations();
 
         // Remove loading screen FIRST
         const loadingScreen = document.getElementById('loading-screen');
@@ -335,169 +331,188 @@ class App {
             );
         }
 
-        // --- CANVAS GROWTH ANIMATION (User Requested) ---
+        // --- SCROLL-BASED IMAGE SEQUENCE (Video-like) ---
         const initCanvasAnimation = () => {
-            const canvas = document.getElementById('growthCanvas');
             const container = document.getElementById('cashew-canvas-container');
+            if (!container) return;
 
-            if (canvas && container) {
-                const ctx = canvas.getContext('2d');
+            // Clear previous canvas if any
+            container.innerHTML = '';
 
-                // Set canvas size
-                const resizeCanvas = () => {
-                    canvas.width = container.clientWidth;
-                    canvas.height = container.clientHeight;
+            // Create image containers with reliable sources
+            const stages = [
+                {
+                    src: 'https://images.unsplash.com/photo-1599596636750-7171d9d96c96?auto=format&fit=crop&w=1000&q=80',
+                    caption: 'Stage 1: Germination 🌱',
+                    desc: 'The journey begins with premium seeds in fertile soil.',
+                    fallbackColor: '#8D6E63'
+                },
+                {
+                    src: 'https://images.unsplash.com/photo-1596435061694-8742b8214db2?auto=format&fit=crop&w=1000&q=80',
+                    caption: 'Stage 2: Growth 🌿',
+                    desc: 'Nurtured by the Guinean sun, saplings grow strong.',
+                    fallbackColor: '#4CAF50'
+                },
+                {
+                    src: 'https://upload.wikimedia.org/wikipedia/commons/3/30/Cashew_apples_and_nuts.jpg',
+                    caption: 'Stage 3: Fruiting 🍎',
+                    desc: 'Vibrant Cashew Apples and raw nuts appear.',
+                    fallbackColor: '#ff6b6b'
+                },
+                {
+                    src: 'https://images.unsplash.com/photo-1543202996-339243764b82?auto=format&fit=crop&w=1000&q=80',
+                    caption: 'Stage 4: Harvest 🥜',
+                    desc: 'Ready for processing and global export.',
+                    fallbackColor: '#d97706'
+                }
+            ];
+
+            // Create DOM elements for images
+            stages.forEach((stage, i) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'growth-stage';
+                wrapper.style.position = 'absolute';
+                wrapper.style.top = '0';
+                wrapper.style.left = '0';
+                wrapper.style.width = '100%';
+                wrapper.style.height = '100%';
+                wrapper.style.opacity = i === 0 ? '1' : '0';
+                wrapper.style.transition = 'opacity 0.5s ease';
+                wrapper.style.display = 'flex';
+                wrapper.style.flexDirection = 'column';
+                wrapper.style.justifyContent = 'center';
+                wrapper.style.alignItems = 'center';
+                wrapper.style.overflow = 'hidden';
+                wrapper.style.backgroundColor = '#f0f0f0'; // Base background
+
+                // Image
+                const img = document.createElement('img');
+                img.src = stage.src;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                img.style.position = 'absolute';
+                img.style.zIndex = '1';
+
+                // Error handling: if image fails, show colored block
+                img.onerror = () => {
+                    img.style.display = 'none';
+                    wrapper.style.backgroundColor = stage.fallbackColor;
+                    const errText = document.createElement('div');
+                    errText.innerText = '(Image Loading...)';
+                    errText.style.color = 'white';
+                    errText.style.zIndex = '2';
+                    errText.style.position = 'absolute';
+                    wrapper.appendChild(errText);
                 };
-                resizeCanvas();
-                window.addEventListener('resize', resizeCanvas);
 
-                let growthProgress = 0;
+                // Overlay text
+                const textOverlay = document.createElement('div');
+                textOverlay.style.position = 'absolute';
+                textOverlay.style.bottom = '20px';
+                textOverlay.style.left = '20px';
+                textOverlay.style.zIndex = '10';
+                textOverlay.style.background = 'rgba(255,255,255,0.95)';
+                textOverlay.style.padding = '15px 25px';
+                textOverlay.style.borderRadius = '15px';
+                textOverlay.style.boxShadow = '0 10px 30px rgba(0,0,0,0.2)';
+                textOverlay.style.maxWidth = '80%';
+                textOverlay.innerHTML = `
+                    <h3 style="color: #d97706; margin:0; font-size: 1.5rem;">${stage.caption}</h3>
+                    <p style="margin:5px 0 0; color: #444;">${stage.desc}</p>
+                `;
 
-                class Plant {
-                    constructor() {
-                        this.x = canvas.width / 2;
-                        this.y = canvas.height - 25;
-                        this.height = 0;
-                        this.maxHeight = canvas.height - 100;
-                    }
+                wrapper.appendChild(img);
+                wrapper.appendChild(textOverlay);
+                container.appendChild(wrapper);
+            });
 
-                    update(progress) {
-                        this.x = canvas.width / 2;
-                        this.y = canvas.height - 25;
-                        this.maxHeight = canvas.height - 120;
+            // ScrollTrigger logic
+            ScrollTrigger.create({
+                trigger: '#cashew-canvas-container',
+                start: 'top top',
+                end: '+=3000', // Long scroll for "video" feel
+                pin: true,
+                scrub: 0.5,
+                onUpdate: (self) => {
+                    const progress = self.progress;
+                    const index = Math.min(Math.floor(progress * stages.length), stages.length - 1);
 
-                        this.height = progress * this.maxHeight;
-                        this.branches = [];
-                        this.flowers = [];
-
-                        // Branches
-                        if (progress > 0.3) {
-                            for (let i = 0; i < 5; i++) {
-                                const branchY = this.y - (this.height * (0.3 + i * 0.12));
-                                const angle = (i % 2 === 0 ? -1 : 1) * (Math.PI / 4);
-                                const branchLength = (progress - 0.3) * 50;
-
-                                this.branches.push({
-                                    startX: this.x,
-                                    startY: branchY,
-                                    endX: this.x + Math.cos(angle) * branchLength,
-                                    endY: branchY + Math.sin(angle) * branchLength,
-                                    thickness: 3 * progress
-                                });
-                            }
+                    // Show active stage, hide others
+                    const stageEls = container.querySelectorAll('.growth-stage');
+                    stageEls.forEach((el, i) => {
+                        if (i === index) {
+                            el.style.opacity = '1';
+                            el.style.transform = 'scale(1)';
+                        } else {
+                            el.style.opacity = '0';
+                            el.style.transform = 'scale(1.1)'; // Slight zoom effect for inactive
                         }
-
-                        // Flowers
-                        if (progress > 0.65) {
-                            const flowerCount = Math.floor((progress - 0.65) * 15);
-                            for (let i = 0; i < flowerCount; i++) {
-                                const flowerY = this.y - (this.height * (0.6 + Math.random() * 0.3));
-                                const offsetX = Math.sin(i) * 40;
-
-                                this.flowers.push({
-                                    x: this.x + offsetX,
-                                    y: flowerY,
-                                    size: 6 * progress,
-                                    color: `hsl(${350 + i * 5}, 80%, 60%)`
-                                });
-                            }
-                        }
-                    }
-
-                    draw() {
-                        // Stem
-                        const gradient = ctx.createLinearGradient(this.x, this.y, this.x, this.y - this.height);
-                        gradient.addColorStop(0, '#8B7355');
-                        gradient.addColorStop(0.5, '#2d5016');
-                        gradient.addColorStop(1, '#81c784');
-
-                        ctx.strokeStyle = gradient;
-                        ctx.lineWidth = Math.max(2, 6 * (1 - growthProgress * 0.5));
-                        ctx.beginPath();
-                        ctx.moveTo(this.x, this.y);
-                        ctx.lineTo(this.x, this.y - this.height);
-                        ctx.stroke();
-
-                        // Branches
-                        this.branches.forEach(branch => {
-                            ctx.strokeStyle = '#2d5016';
-                            ctx.lineWidth = branch.thickness;
-                            ctx.beginPath();
-                            ctx.moveTo(branch.startX, branch.startY);
-                            ctx.lineTo(branch.endX, branch.endY);
-                            ctx.stroke();
-                        });
-
-                        // Flowers
-                        this.flowers.forEach(flower => {
-                            ctx.fillStyle = flower.color;
-                            ctx.beginPath();
-                            ctx.arc(flower.x, flower.y, flower.size, 0, Math.PI * 2);
-                            ctx.fill();
-                        });
-                    }
+                    });
                 }
+            });
+        };
+        // initCanvasAnimation();
 
-                const plant = new Plant();
+        const initVideoScroll = () => {
+            const container = document.getElementById('cashew-canvas-container');
+            if (!container) return;
 
-                function animateCanvas() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Clear previous content
+            container.innerHTML = '';
+            container.style.backgroundColor = '#000';
+            container.style.height = '100vh'; // Enforce full screen height for the lock
 
-                    // Sky
-                    const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                    bgGradient.addColorStop(0, '#87ceeb');
-                    bgGradient.addColorStop(1, '#e0f6ff');
-                    ctx.fillStyle = bgGradient;
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Create Video Element
+            const video = document.createElement('video');
+            video.src = 'videos/plant grow.mp4';
+            video.muted = true;
+            video.playsInline = true;
+            video.preload = "auto";
+            video.style.width = '100vw';
+            video.style.height = '100vh';
+            video.style.objectFit = 'cover';
+            video.style.position = 'absolute';
+            video.style.top = '0';
+            video.style.left = '0';
 
-                    // Sun
-                    ctx.fillStyle = '#FFD700';
-                    ctx.beginPath();
-                    ctx.arc(60, 60, 25, 0, Math.PI * 2);
-                    ctx.fill();
+            const loader = document.createElement('div');
+            loader.innerText = 'Loading Video...';
+            loader.style.position = 'absolute';
+            loader.style.top = '50%';
+            loader.style.left = '50%';
+            loader.style.transform = 'translate(-50%, -50%)';
+            loader.style.color = 'white';
+            loader.style.zIndex = '2';
 
-                    // Soil
-                    ctx.fillStyle = '#8B7355';
-                    ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
+            container.appendChild(loader);
+            container.appendChild(video);
 
-                    plant.update(growthProgress);
-                    plant.draw();
-
-                    requestAnimationFrame(animateCanvas);
-                }
-                animateCanvas();
-
-                // ScrollTrigger
-                const titleEl = document.getElementById('stage-title');
-                const descEl = document.getElementById('stage-desc');
-
+            const startScroll = () => {
+                loader.style.display = 'none';
                 ScrollTrigger.create({
                     trigger: '#cashew-canvas-container',
-                    start: 'top 75%',
-                    end: 'bottom 25%',
+                    start: 'top top',
+                    end: '+=800', // Faster scrub
+                    pin: true,
+                    anticipatePin: 1, // Smooth out pin entry
                     scrub: 1,
                     onUpdate: (self) => {
-                        growthProgress = self.progress;
-                        if (titleEl && descEl) {
-                            if (growthProgress < 0.2) {
-                                titleEl.innerText = "Stage 1: Planting 🌱";
-                                descEl.innerText = "Seeds sown in nutrient-rich soil.";
-                            } else if (growthProgress < 0.5) {
-                                titleEl.innerText = "Stage 2: Growth 🌿";
-                                descEl.innerText = "Developing roots and foliage.";
-                            } else if (growthProgress < 0.8) {
-                                titleEl.innerText = "Stage 3: Flowering 🌸";
-                                descEl.innerText = "Pollination and blooming.";
-                            } else {
-                                titleEl.innerText = "Stage 4: Harvest 🥜";
-                                descEl.innerText = "Premium Cashews ready.";
-                            }
+                        if (video.duration) {
+                            video.currentTime = video.duration * self.progress;
                         }
                     }
                 });
-            }
+            };
+
+            video.addEventListener('loadedmetadata', startScroll);
+
+            // Fallback
+            setTimeout(() => {
+                if (loader.style.display !== 'none') startScroll();
+            }, 2000);
         };
-        initCanvasAnimation();
+        initVideoScroll();
 
 
         // --- PARTNER & GLOBE INTERACTION ---
@@ -547,6 +562,103 @@ class App {
         initGlobeInteraction();
     }
 
+    setupSiteAnimations() {
+        // 1. Generic Section Headers Fade Up
+        const headers = gsap.utils.toArray('.section-header');
+        headers.forEach(header => {
+            gsap.fromTo(header,
+                { opacity: 0, y: 50 },
+                {
+                    scrollTrigger: {
+                        trigger: header,
+                        start: 'top 85%',
+                        toggleActions: 'play none none reverse'
+                    },
+                    opacity: 1,
+                    y: 0,
+                    duration: 1,
+                    ease: 'power3.out'
+                }
+            );
+        });
+
+        // 2. Info Boxes (Partners) - Staggered
+        ScrollTrigger.batch('.info-box', {
+            start: 'top 85%',
+            onEnter: batch => gsap.fromTo(batch,
+                { opacity: 0, y: 30 },
+                { opacity: 1, y: 0, stagger: 0.15, duration: 0.8, ease: 'power2.out' }
+            ),
+            onLeaveBack: batch => gsap.to(batch, { opacity: 0, y: 30, overwrite: true })
+        });
+
+        // 3. Process Steps - Staggered
+        ScrollTrigger.batch('.step', {
+            start: 'top 85%',
+            onEnter: batch => gsap.fromTo(batch,
+                { opacity: 0, y: 50 },
+                { opacity: 1, y: 0, stagger: 0.2, duration: 0.6, ease: 'back.out(1.2)' }
+            ),
+            onLeaveBack: batch => gsap.to(batch, { opacity: 0, y: 50, overwrite: true })
+        });
+
+        // 4. Partner Marquee Fade In
+        const marquee = document.querySelector('.partner-carousel');
+        if (marquee) {
+            gsap.fromTo(marquee,
+                { opacity: 0 },
+                {
+                    scrollTrigger: {
+                        trigger: marquee,
+                        start: 'top 90%',
+                        toggleActions: 'play none none reverse'
+                    },
+                    opacity: 1,
+                    duration: 1.5
+                }
+            );
+        }
+
+        // 5. Contact Section
+        const contactInfo = document.querySelector('.contact-info');
+        if (contactInfo) {
+            gsap.fromTo(contactInfo,
+                { opacity: 0, x: -50 },
+                {
+                    scrollTrigger: {
+                        trigger: contactInfo,
+                        start: 'top 80%',
+                        toggleActions: 'play none none reverse'
+                    },
+                    opacity: 1,
+                    x: 0,
+                    duration: 1,
+                    ease: 'power3.out'
+                }
+            );
+        }
+
+        // Ensure Contact Form is also animating (checks if already setup, if not, sets it up)
+        const contactForm = document.querySelector('.contact-form-card');
+        if (contactForm && !ScrollTrigger.getById('contactFormAnim')) {
+            gsap.fromTo(contactForm,
+                { opacity: 0, x: 50 },
+                {
+                    scrollTrigger: {
+                        id: 'contactFormAnim',
+                        trigger: contactForm,
+                        start: 'top 80%',
+                        toggleActions: 'play none none reverse'
+                    },
+                    opacity: 1,
+                    x: 0,
+                    duration: 1,
+                    ease: 'power3.out'
+                }
+            );
+        }
+    }
+
     setupInteractions() {
         // Navbar scroll effect
         window.addEventListener('scroll', () => {
@@ -557,6 +669,27 @@ class App {
                 nav.classList.remove('scrolled');
             }
         });
+
+        // Mobile Menu Toggle
+        const hamburger = document.querySelector('.hamburger');
+        const mobileMenu = document.querySelector('.mobile-menu-overlay');
+        const mobileLinks = document.querySelectorAll('.mobile-nav-links a');
+
+        if (hamburger && mobileMenu) {
+            hamburger.addEventListener('click', () => {
+                console.log('Hamburger clicked');
+                mobileMenu.classList.toggle('active');
+                hamburger.classList.toggle('toggle');
+            });
+
+            // Close menu when a link is clicked
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.remove('active');
+                    hamburger.classList.remove('toggle');
+                });
+            });
+        }
 
         // CTA interactions
         const mainCta = document.getElementById('main-cta');
