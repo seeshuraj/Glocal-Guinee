@@ -378,8 +378,23 @@ h1.glitch {
 .about-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    gap: 4rem;
+    /* Increased gap for better spacing */
     align-items: center;
+    /* Ensures vertical centering */
+}
+
+.about-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Double check alignment */
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 10px;
+    /* Frame effect */
+    background: #fff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .about-text p {
@@ -514,7 +529,8 @@ h1.glitch {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    border: 1px solid var(--glass-border);
+    border: 1px solid #e4e4e7;
+    /* ShadCN border color */
 }
 
 .card-front {
@@ -532,7 +548,7 @@ h1.glitch {
     background-repeat: no-repeat !important;
     transform: rotateY(180deg);
     color: white !important;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     position: relative;
     overflow: hidden;
     display: flex;
@@ -542,8 +558,7 @@ h1.glitch {
     padding: 2rem;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    z-index: 2;
-    /* Ensure it is on top when flipped */
+    /* Removed manual z-index to let 3D transform handle visibility */
 }
 
 .bg-sesame {

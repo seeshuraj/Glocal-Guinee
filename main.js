@@ -4,7 +4,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Scene } from './src/Scene.js';
 import { Assets } from './src/Assets.js';
 import { Physics } from './src/Physics.js';
+import { Physics } from './src/Physics.js';
 import { Particles } from './src/Particles.js';
+import anime from 'animejs/lib/anime.es.js';
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
@@ -248,17 +250,19 @@ class App {
         if (heroTitle) {
             const text = heroTitle.textContent;
             heroTitle.innerHTML = text.split('').map(char =>
-                `<span class="char" style="display:inline-block;">${char === ' ' ? '&nbsp;' : char}</span>`
+                `<span class="char" style="display:inline-block; opacity: 0; transform: translateY(100px);">${char === ' ' ? '&nbsp;' : char}</span>`
             ).join('');
 
-            gsap.from(heroTitle.querySelectorAll('.char'), {
-                y: 100,
-                opacity: 0,
-                duration: 1.2,
-                ease: "expo.out",
-                stagger: 0.05,
-                delay: 0.5
+            // Anime.js implementation for cleaner, more elastic text reveal
+            anime({
+                targets: '#hero-title .char',
+                translateY: [100, 0],
+                opacity: [0, 1],
+                delay: anime.stagger(50, { start: 500 }),
+                easing: 'easeOutElastic(1, .6)',
+                duration: 1500
             });
+
         }
 
         const heroTl = gsap.timeline({ delay: 1.2 });
