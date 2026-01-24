@@ -8,7 +8,15 @@ import { Particles } from './src/Particles.js';
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
-ScrollTrigger.normalizeScroll(true); // Fix key mobile scroll jitter issues
+
+// Safari iPhone Optimization: Scroll Normalization
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+if (isIOS) {
+    ScrollTrigger.normalizeScroll(true);
+    ScrollTrigger.config({ ignoreMobileResize: true }); // Re-apply config for consistency
+} else {
+    ScrollTrigger.normalizeScroll(true); // Apply for non-iOS too, as per original code
+}
 
 class ProductViewer {
     constructor(containerId, assets) {
