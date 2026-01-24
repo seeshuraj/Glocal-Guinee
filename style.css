@@ -543,6 +543,18 @@ h1.glitch {
     backface-visibility: hidden;
 }
 
+.bg-sesame {
+    background-image: url('/images/sesame.jpg') !important;
+}
+
+.bg-cashew {
+    background-image: url('/images/cashew.jpg') !important;
+}
+
+.bg-cocoa {
+    background-image: url('/images/cocoa.jpg') !important;
+}
+
 /* Dark overlay to make text readable */
 .card-back::before {
     content: '';
@@ -1449,6 +1461,24 @@ h1.glitch {
     -webkit-backdrop-filter: blur(15px);
     backdrop-filter: blur(15px);
     border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.menu-close-btn {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    background: none;
+    border: none;
+    font-size: 3rem;
+    color: var(--text-dark);
+    cursor: pointer;
+    z-index: 2005;
+    transition: transform 0.3s ease;
+}
+
+.menu-close-btn:hover {
+    transform: rotate(90deg) scale(1.1);
+    color: var(--primary);
 }
 
 .mobile-menu-overlay.active {

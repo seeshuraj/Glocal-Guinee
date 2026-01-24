@@ -11,7 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;600&display=swap"
         rel="stylesheet">
     <!-- GSAP and Three.js removed (bundled in main.js) -->
-
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.29/dist/lenis.min.js"></script>
 </head>
 
 <body>
@@ -57,6 +57,7 @@
         </nav>
 
         <div class="mobile-menu-overlay">
+            <button class="menu-close-btn" aria-label="Close Menu">&times;</button>
             <div class="mobile-nav-links">
                 <a href="#home">Home</a>
                 <a href="#about">About Us</a>
@@ -123,7 +124,8 @@
                             <img src="https://placehold.co/800x600/e6f3ff/000000?text=Premium+Guinean+Agriculture"
                                 alt="Guinean Agriculture"
                                 onerror="this.src='https://via.placeholder.com/800x600?text=Agriculture+Fallback'"
-                                style="width: 100%; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                                style="width: 100%; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);"
+                                data-speed="0.8">
                         </div>
                     </div>
                 </div>

@@ -108,6 +108,7 @@ class App {
         this.setupEntranceAnimations();
         this.setupScrollTrigger();
         this.setupScrollEffects();
+        this.initLenis();
 
         // 2. Component & Interaction Setup
         this.setupInteractions();
@@ -282,6 +283,21 @@ class App {
             ease: "none"
         });
 
+        // Universal Parallax System
+        gsap.utils.toArray('[data-speed]').forEach(el => {
+            const speed = parseFloat(el.getAttribute('data-speed'));
+            gsap.to(el, {
+                y: (i, target) => -ScrollTrigger.maxScroll(window) * target.getAttribute('data-speed') * 0.2, // Scaling factor
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top bottom',
+                    end: 'bottom top',
+                    scrub: 0
+                }
+            });
+        });
+
         // Section Headers
         gsap.utils.toArray('.section-header').forEach(header => {
             const tagline = header.querySelector('.section-tagline');
@@ -399,6 +415,15 @@ class App {
                 mobileMenu.classList.toggle('active');
                 hamburger.classList.toggle('toggle');
             });
+
+            const closeBtn = document.querySelector('.menu-close-btn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    mobileMenu.classList.remove('active');
+                    hamburger.classList.remove('toggle');
+                });
+            }
+
             mobileMenu.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', () => {
                     mobileMenu.classList.remove('active');
@@ -525,10 +550,39 @@ class App {
         });
     }
 
-    animate() {
-        requestAnimationFrame(() => this.animate());
+    animate(time) {
+        if (this.lenis) {
+            this.lenis.raf(time);
+        }
+        requestAnimationFrame((t) => this.animate(t));
         if (this.productViewer) this.productViewer.render();
         this.scene.render();
+    }
+
+    initLenis() {
+        if (typeof Lenis !== 'undefined') {
+            this.lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                direction: 'vertical',
+                gestureDirection: 'vertical',
+                smooth: true,
+                mouseMultiplier: 1,
+                smoothTouch: false,
+                touchMultiplier: 2,
+            });
+
+            // Connect Lenis to ScrollTrigger
+            this.lenis.on('scroll', ScrollTrigger.update);
+
+            gsap.ticker.add((time) => {
+                this.lenis.raf(time * 1000);
+            });
+
+            gsap.ticker.lagSmoothing(0);
+        } else {
+            console.warn('Lenis not found. smooth scrolling disabled.');
+        }
     }
 }
 
