@@ -485,26 +485,50 @@ class App {
         const video = document.createElement('video');
         video.src = '/videos/plant-grow-optimized.mp4';
         video.muted = true;
-        video.setAttribute('playsinline', '');
-        video.setAttribute('webkit-playsinline', '');
+        video.autoplay = true; // Required by some iOS versions to trigger load
+        video.loop = true;
+        video.setAttribute('playsinline', 'true');
+        video.setAttribute('webkit-playsinline', 'true');
         video.preload = "auto";
-        video.style.cssText = 'width: 100vw; height: 100vh; object-fit: cover; position: absolute; top:0; left:0;';
+        video.style.cssText = 'width: 100vw; height: 100vh; object-fit: cover; position: absolute; top:0; left:0; pointer-events: none;';
+
         const loader = document.createElement('div');
         loader.innerText = 'Initializing Sequence...';
-        loader.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;';
+        loader.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-family: sans-serif;';
         container.appendChild(loader);
         container.appendChild(video);
-        video.addEventListener('loadedmetadata', () => {
+
+        // Required for iOS to "unlock" the video for seeking
+        video.load();
+        video.play().then(() => {
+            video.pause();
+        }).catch(() => {
+            // Silently handle autoplay blocks
+        });
+
+        const setupTrigger = () => {
             loader.style.display = 'none';
             ScrollTrigger.create({
                 trigger: '#cashew-canvas-container',
                 start: 'top top',
-                end: '+=800',
+                end: '+=1200', // Slightly longer for better feel
                 pin: true,
-                scrub: 1,
-                onUpdate: (self) => { if (video.duration) video.currentTime = video.duration * self.progress; }
+                scrub: 0.5, // Smoother scrub
+                onUpdate: (self) => {
+                    if (video.duration) {
+                        video.currentTime = video.duration * self.progress;
+                    }
+                }
             });
-        });
+        };
+
+        if (video.readyState >= 2) {
+            setupTrigger();
+        } else {
+            video.addEventListener('loadeddata', setupTrigger);
+            // Fallback for some versions of Safari
+            video.addEventListener('loadedmetadata', setupTrigger);
+        }
     }
 
     setupFAQ() {
