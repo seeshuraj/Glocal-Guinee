@@ -484,8 +484,6 @@ class App {
         container.style.backgroundColor = '#000';
 
         const video = document.createElement('video');
-
-        // Critical iOS/Safari Attribute Order
         video.setAttribute('muted', '');
         video.muted = true;
         video.setAttribute('playsinline', '');
@@ -493,7 +491,6 @@ class App {
         video.setAttribute('preload', 'auto');
         video.style.cssText = 'width: 100vw; height: 100vh; height: 100svh; object-fit: cover; position: absolute; top:0; left:0; pointer-events: none; opacity: 0; transition: opacity 0.5s ease;';
 
-        // Set src AFTER attributes
         video.src = '/videos/plant-grow-optimized.mp4';
 
         const loader = document.createElement('div');
@@ -502,49 +499,43 @@ class App {
         container.appendChild(loader);
         container.appendChild(video);
 
-        video.load();
-
+        let isInitialized = false;
         const initializeScroll = () => {
+            if (isInitialized) return;
+            isInitialized = true;
+
             loader.style.display = 'none';
             video.style.opacity = '1';
-
-            // Fixed duration for scrubbing to avoid frame skipping on iOS
-            const scrollDuration = 1500;
 
             ScrollTrigger.create({
                 trigger: '#cashew-canvas-container',
                 start: 'top top',
-                end: `+=${scrollDuration}`,
+                end: '+=1200',
                 pin: true,
-                scrub: true,
+                scrub: 0.5,
                 onUpdate: (self) => {
-                    const scrollProgress = self.progress;
-                    const targetTime = video.duration * scrollProgress;
-
-                    // Simple assignment for better iOS performance
-                    // If targetTime is 0, Safari sometimes glitches, so we add a tiny offset
-                    video.currentTime = Math.min(video.duration - 0.1, Math.max(0.1, targetTime));
+                    if (video.duration) {
+                        video.currentTime = video.duration * self.progress;
+                    }
                 }
             });
         };
 
-        // More robust event check for Safari
-        const onVideoReady = () => {
-            if (video.readyState >= 2) { // HAVE_CURRENT_DATA
-                initializeScroll();
-            }
-        };
+        // Listen for standard events
+        video.addEventListener('loadeddata', initializeScroll);
 
-        video.addEventListener('loadeddata', onVideoReady);
-        video.addEventListener('canplaythrough', onVideoReady);
-        video.addEventListener('progress', onVideoReady);
+        // Immediate check if already loaded
+        if (video.readyState >= 2) {
+            initializeScroll();
+        }
 
-        // Fallback for Safari if events are missed
+        // Failsafe for all browsers
+        video.load();
         setTimeout(() => {
-            if (video.readyState >= 2 && !loader.style.display === 'none') {
+            if (!isInitialized && video.readyState >= 1) {
                 initializeScroll();
             }
-        }, 2000);
+        }, 3000);
     }
 
     setupFAQ() {
