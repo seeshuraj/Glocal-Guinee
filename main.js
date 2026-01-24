@@ -482,53 +482,69 @@ class App {
         if (!container) return;
         container.innerHTML = '';
         container.style.backgroundColor = '#000';
+
         const video = document.createElement('video');
-        video.src = '/videos/plant-grow-optimized.mp4';
+
+        // Critical iOS/Safari Attribute Order
+        video.setAttribute('muted', '');
         video.muted = true;
-        video.autoplay = true; // Required by some iOS versions to trigger load
-        video.loop = true;
-        video.setAttribute('playsinline', 'true');
-        video.setAttribute('webkit-playsinline', 'true');
-        video.preload = "auto";
-        video.style.cssText = 'width: 100vw; height: 100vh; object-fit: cover; position: absolute; top:0; left:0; pointer-events: none;';
+        video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
+        video.setAttribute('preload', 'auto');
+        video.style.cssText = 'width: 100vw; height: 100vh; height: 100svh; object-fit: cover; position: absolute; top:0; left:0; pointer-events: none; opacity: 0; transition: opacity 0.5s ease;';
+
+        // Set src AFTER attributes
+        video.src = '/videos/plant-grow-optimized.mp4';
 
         const loader = document.createElement('div');
-        loader.innerText = 'Initializing Sequence...';
-        loader.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-family: sans-serif;';
+        loader.innerText = 'Syncing Sequence...';
+        loader.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-family: sans-serif; z-index: 10;';
         container.appendChild(loader);
         container.appendChild(video);
 
-        // Required for iOS to "unlock" the video for seeking
         video.load();
-        video.play().then(() => {
-            video.pause();
-        }).catch(() => {
-            // Silently handle autoplay blocks
-        });
 
-        const setupTrigger = () => {
+        const initializeScroll = () => {
             loader.style.display = 'none';
+            video.style.opacity = '1';
+
+            // Fixed duration for scrubbing to avoid frame skipping on iOS
+            const scrollDuration = 1500;
+
             ScrollTrigger.create({
                 trigger: '#cashew-canvas-container',
                 start: 'top top',
-                end: '+=1200', // Slightly longer for better feel
+                end: `+=${scrollDuration}`,
                 pin: true,
-                scrub: 0.5, // Smoother scrub
+                scrub: true,
                 onUpdate: (self) => {
-                    if (video.duration) {
-                        video.currentTime = video.duration * self.progress;
-                    }
+                    const scrollProgress = self.progress;
+                    const targetTime = video.duration * scrollProgress;
+
+                    // Simple assignment for better iOS performance
+                    // If targetTime is 0, Safari sometimes glitches, so we add a tiny offset
+                    video.currentTime = Math.min(video.duration - 0.1, Math.max(0.1, targetTime));
                 }
             });
         };
 
-        if (video.readyState >= 2) {
-            setupTrigger();
-        } else {
-            video.addEventListener('loadeddata', setupTrigger);
-            // Fallback for some versions of Safari
-            video.addEventListener('loadedmetadata', setupTrigger);
-        }
+        // More robust event check for Safari
+        const onVideoReady = () => {
+            if (video.readyState >= 2) { // HAVE_CURRENT_DATA
+                initializeScroll();
+            }
+        };
+
+        video.addEventListener('loadeddata', onVideoReady);
+        video.addEventListener('canplaythrough', onVideoReady);
+        video.addEventListener('progress', onVideoReady);
+
+        // Fallback for Safari if events are missed
+        setTimeout(() => {
+            if (video.readyState >= 2 && !loader.style.display === 'none') {
+                initializeScroll();
+            }
+        }, 2000);
     }
 
     setupFAQ() {
