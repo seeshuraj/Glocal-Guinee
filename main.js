@@ -9,14 +9,12 @@ import { Particles } from './src/Particles.js';
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
 
-// Safari iPhone Optimization: Scroll Normalization
+// iOS-specific ScrollTrigger config
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-if (isIOS) {
-    ScrollTrigger.normalizeScroll(true);
-    ScrollTrigger.config({ ignoreMobileResize: true }); // Re-apply config for consistency
-} else {
-    ScrollTrigger.normalizeScroll(true); // Apply for non-iOS too, as per original code
-}
+ScrollTrigger.config({
+    ignoreMobileResize: true,
+    autoRefreshEvents: isIOS ? "visibilitychange,DOMContentLoaded,load" : "resize,visibilitychange,DOMContentLoaded,load"
+});
 
 class ProductViewer {
     constructor(containerId, assets) {
@@ -602,7 +600,7 @@ class App {
     initLenis() {
         if (typeof Lenis !== 'undefined') {
             this.lenis = new Lenis({
-                duration: 1.2,
+                duration: 1.5,
                 easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
                 direction: 'vertical',
                 gestureDirection: 'vertical',
