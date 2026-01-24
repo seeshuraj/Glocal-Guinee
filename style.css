@@ -383,6 +383,8 @@ h1.glitch {
 
 .about-image {
     width: 100%;
+    max-width: 500px;
+    /* Limit image width */
     max-height: 350px;
     /* Limit image height */
     display: flex;
@@ -393,14 +395,15 @@ h1.glitch {
     padding: 10px;
     background: #fff;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    /* Clip anything that overflows */
 }
 
 .about-image img {
-    max-width: 100% !important;
-    /* Override inline styles */
-    height: auto !important;
-    width: 100% !important;
-    /* Fill the container */
+    width: 100%;
+    /* Fill the container width */
+    max-height: 330px;
+    /* Slightly less than container to account for padding */
     object-fit: cover;
     /* Cover the space while maintaining aspect ratio */
     border-radius: 15px !important;
