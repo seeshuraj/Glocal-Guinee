@@ -1456,18 +1456,30 @@ h1.glitch {
         margin: 20px 0;
     }
 
-    #growth-video-section,
+    #growth-video-section {
+        height: 100dvh !important;
+        position: relative !important;
+        z-index: 10 !important;
+        background: #000 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
     #cashew-canvas-container {
         height: 100dvh !important;
         min-height: 100dvh !important;
-        /* Dynamic Viewport Height for Mobile */
+        z-index: 11 !important;
+        overflow: hidden !important;
     }
 
     #cashew-canvas-container video {
-        object-fit: cover;
-        width: 100vw;
-        height: 100dvh;
+        object-fit: cover !important;
+        width: 100vw !important;
+        height: 100dvh !important;
         min-height: 100dvh !important;
+        display: block !important;
+        opacity: 1 !important;
+        z-index: 12 !important;
     }
 
     .loader-text {
