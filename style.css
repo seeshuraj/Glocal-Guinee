@@ -1463,6 +1463,8 @@ h1.glitch {
         background: #000 !important;
         visibility: visible !important;
         opacity: 1 !important;
+        overflow: visible !important;
+        /* Allow pinning spacers */
     }
 
     #cashew-canvas-container {
@@ -1487,8 +1489,6 @@ h1.glitch {
     }
 
     #partners {
-        margin-top: 0 !important;
-        /* Reset margin, relying on ScrollTrigger pin */
         position: relative;
         z-index: 5;
     }

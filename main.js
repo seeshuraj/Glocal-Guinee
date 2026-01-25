@@ -526,15 +526,15 @@ class App {
                 setTimeout(() => loader.style.display = 'none', 500);
 
                 ScrollTrigger.create({
-                    trigger: '#cashew-canvas-container',
+                    trigger: '#growth-video-section',
                     start: 'top top',
-                    end: '+=1500',
+                    end: '+=2000', // Increased duration for better "fixed" feel
                     pin: true,
+                    pinType: isMobile ? 'fixed' : 'transform', // Force fixed on mobile to prevent skips
                     anticipatePin: 1,
-                    scrub: isMobile ? 1.5 : 0.5,
+                    scrub: isMobile ? 1 : 0.5,
                     onUpdate: (self) => {
                         if (video.duration && !isNaN(video.duration)) {
-                            // Clamp and apply progress
                             video.currentTime = Math.max(0, Math.min(video.duration - 0.1, video.duration * self.progress));
                         }
                     }
