@@ -501,10 +501,16 @@ class App {
         video.setAttribute('loop', 'true');
         video.setAttribute('autoplay', 'true'); // Required for some browsers to load first frame
 
-        video.style.cssText = 'width: 100vw; height: 100dvh; object-fit: cover; position: absolute; top:0; left:0; pointer-events: none; opacity: 0; transition: opacity 0.3s ease; z-index: 2; display: block;';
+        // Extremely high z-index to match CSS
+        video.style.cssText = 'width: 100vw; height: 100dvh; object-fit: cover; position: absolute; top:0; left:0; pointer-events: none; opacity: 0; transition: opacity 0.5s ease; z-index: 1001; display: block;';
 
-        // Use absolute path for Vite
-        video.src = window.location.origin + '/videos/plant-grow-optimized.mp4';
+        // Robust path resolution
+        video.src = '/videos/plant-grow-optimized.mp4';
+
+        // Add a fallback image to the container
+        container.style.backgroundImage = 'url(/images/about-agriculture.png)';
+        container.style.backgroundSize = 'cover';
+        container.style.backgroundPosition = 'center';
 
         const loader = document.createElement('div');
         loader.innerText = 'Initializing...';
@@ -568,15 +574,23 @@ class App {
             }
         }, 500);
 
-        // Failsafe
+        // Failsafe: If no initialization after 6 seconds, force it and log
         video.load();
         setTimeout(() => {
             clearInterval(checkReady);
             if (!isInitialized) {
-                console.warn('Video failsafe forced');
+                console.error('CRITICAL: Video initialization failed on this device. Forcing visibility.');
+                // Try a different path just in case
+                if (video.readyState === 0) video.src = 'videos/plant-grow-optimized.mp4';
                 initializeScroll();
+
+                // Overlay a message if still failing (invisible but helps debugging)
+                const debugInfo = document.createElement('div');
+                debugInfo.style.cssText = 'position:absolute; bottom:10px; left:10px; color:rgba(255,255,255,0.2); font-size:10px; z-index:100; pointer-events:none;';
+                debugInfo.innerText = `V-Ready: ${video.readyState} | Mob: ${isMobile}`;
+                container.appendChild(debugInfo);
             }
-        }, 5000);
+        }, 6000);
     }
 
     setupFAQ() {
