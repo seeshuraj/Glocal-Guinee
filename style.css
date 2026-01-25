@@ -1470,8 +1470,10 @@ h1.glitch {
     #cashew-canvas-container {
         height: 100dvh !important;
         min-height: 100dvh !important;
+        width: 100% !important;
         z-index: 11 !important;
         overflow: hidden !important;
+        background: #000 !important;
     }
 
     #cashew-canvas-container video {

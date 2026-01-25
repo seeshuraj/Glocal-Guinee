@@ -528,14 +528,18 @@ class App {
                 ScrollTrigger.create({
                     trigger: '#growth-video-section',
                     start: 'top top',
-                    end: '+=2000', // Increased duration for better "fixed" feel
+                    end: '+=3000', // Significantly increased for a smoother, longer pin on mobile
                     pin: true,
-                    pinType: isMobile ? 'fixed' : 'transform', // Force fixed on mobile to prevent skips
+                    pinSpacing: true,
+                    pinType: 'transform', // Better for Lenis compatibility on most mobile browsers
                     anticipatePin: 1,
-                    scrub: isMobile ? 1 : 0.5,
+                    scrub: 1, // responsive scrub
+                    preventOverlaps: true,
+                    fastScrollEnd: true,
                     onUpdate: (self) => {
                         if (video.duration && !isNaN(video.duration)) {
-                            video.currentTime = Math.max(0, Math.min(video.duration - 0.1, video.duration * self.progress));
+                            // Map progress to video duration, leaving a tiny buffer at the end
+                            video.currentTime = Math.max(0, Math.min(video.duration - 0.05, video.duration * self.progress));
                         }
                     }
                 });
