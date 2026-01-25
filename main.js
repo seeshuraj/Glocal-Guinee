@@ -631,26 +631,22 @@ class App {
         });
     }
 
-    animate(time) {
-        if (this.lenis) {
-            this.lenis.raf(time);
-        }
-        requestAnimationFrame((t) => this.animate(t));
+    animate() {
+        // Lenis RAF is handled by gsap.ticker for better sync
         if (this.productViewer) this.productViewer.render();
         this.scene.render();
+        requestAnimationFrame(() => this.animate());
     }
 
     initLenis() {
         if (typeof Lenis !== 'undefined') {
             this.lenis = new Lenis({
-                duration: 1.5,
+                duration: 1.2,
                 easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-                direction: 'vertical',
-                gestureDirection: 'vertical',
-                smooth: true,
-                mouseMultiplier: 1,
-                smoothTouch: true,
-                touchMultiplier: 2,
+                smoothWheel: true,
+                smoothTouch: false, // Use native touch momentum for better mobile feel
+                touchMultiplier: 1.5,
+                infinite: false,
             });
 
             // Connect Lenis to ScrollTrigger
