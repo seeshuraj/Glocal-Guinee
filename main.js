@@ -10,7 +10,9 @@ gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
 
 // iOS-specific ScrollTrigger config
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
 ScrollTrigger.config({
     ignoreMobileResize: true,
     autoRefreshEvents: isIOS ? "visibilitychange,DOMContentLoaded,load" : "resize,visibilitychange,DOMContentLoaded,load"
@@ -373,14 +375,19 @@ class App {
 
         // Fail-safe: Reveal hidden elements after 5 seconds if JS/ScrollTrigger hangs
         setTimeout(() => {
-            gsap.to('.step, .counter', {
+            gsap.to('.step, .counter, .section-reveal, .product-card, .info-box', {
                 opacity: 1,
                 y: 0,
+                scale: 1,
                 stagger: 0.1,
                 duration: 1,
                 overwrite: 'auto',
-                ease: "power2.out"
+                ease: "power2.out",
+                onComplete: () => {
+                    document.querySelectorAll('.section-reveal').forEach(el => el.classList.add('active'));
+                }
             });
+            ScrollTrigger.refresh();
         }, 5000);
 
     }
@@ -487,13 +494,17 @@ class App {
         video.setAttribute('playsinline', '');
         video.setAttribute('webkit-playsinline', '');
         video.setAttribute('preload', 'auto');
-        video.style.cssText = 'width: 100vw; height: 100vh; height: 100svh; object-fit: cover; position: absolute; top:0; left:0; pointer-events: none; opacity: 0; transition: opacity 0.5s ease;';
+        // Add autoplay and loop but keep it paused initially - helps some mobile browsers
+        video.setAttribute('autoplay', 'true');
+        video.setAttribute('loop', 'true');
+
+        video.style.cssText = 'width: 100vw; height: 100vh; height: 100dvh; object-fit: cover; position: absolute; top:0; left:0; pointer-events: none; opacity: 0; transition: opacity 0.5s ease;';
 
         video.src = '/videos/plant-grow-optimized.mp4';
 
         const loader = document.createElement('div');
         loader.innerText = 'Syncing Sequence...';
-        loader.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-family: sans-serif; z-index: 10;';
+        loader.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-family: sans-serif; z-index: 10; transition: opacity 0.5s ease;';
         container.appendChild(loader);
         container.appendChild(video);
 
@@ -502,25 +513,34 @@ class App {
             if (isInitialized) return;
             isInitialized = true;
 
-            loader.style.display = 'none';
-            video.style.opacity = '1';
+            // Force a small jump to ensure frame is rendered on mobile
+            video.currentTime = 0.1;
+            video.pause();
 
-            ScrollTrigger.create({
-                trigger: '#cashew-canvas-container',
-                start: 'top top',
-                end: '+=1200',
-                pin: true,
-                scrub: 0.5,
-                onUpdate: (self) => {
-                    if (video.duration) {
-                        video.currentTime = video.duration * self.progress;
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                video.style.opacity = '1';
+                setTimeout(() => loader.style.display = 'none', 500);
+
+                ScrollTrigger.create({
+                    trigger: '#cashew-canvas-container',
+                    start: 'top top',
+                    end: '+=1500', // Increased length for smoother mobile scrub
+                    pin: true,
+                    scrub: isMobile ? 1 : 0.5, // Smoother scrub on mobile
+                    onUpdate: (self) => {
+                        if (video.duration) {
+                            video.currentTime = video.duration * self.progress;
+                        }
                     }
-                }
-            });
+                });
+                ScrollTrigger.refresh();
+            }, 200);
         };
 
         // Listen for standard events
         video.addEventListener('loadeddata', initializeScroll);
+        video.addEventListener('canplaythrough', initializeScroll);
 
         // Immediate check if already loaded
         if (video.readyState >= 2) {
@@ -530,10 +550,11 @@ class App {
         // Failsafe for all browsers
         video.load();
         setTimeout(() => {
-            if (!isInitialized && video.readyState >= 1) {
+            if (!isInitialized) {
+                console.log('Video failsafe triggered');
                 initializeScroll();
             }
-        }, 3000);
+        }, 4000);
     }
 
     setupFAQ() {

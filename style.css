@@ -252,7 +252,7 @@ h4 {
 /* Hero Section */
 .hero-ui {
     height: 100vh;
-    height: 100svh;
+    height: 100dvh;
     /* Safari dynamic viewport fix */
     display: flex;
     align-items: center;
@@ -1459,6 +1459,7 @@ h1.glitch {
     #growth-video-section,
     #cashew-canvas-container {
         height: 100dvh !important;
+        min-height: 100dvh !important;
         /* Dynamic Viewport Height for Mobile */
     }
 
@@ -1466,6 +1467,7 @@ h1.glitch {
         object-fit: cover;
         width: 100vw;
         height: 100dvh;
+        min-height: 100dvh !important;
     }
 
     .loader-text {
@@ -1473,11 +1475,14 @@ h1.glitch {
     }
 
     #partners {
-        margin-top: 50vh;
-        /* Prevent overlap with pinned video */
+        margin-top: 0 !important;
+        /* Reset margin, relying on ScrollTrigger pin */
         position: relative;
         z-index: 5;
-        /* Ensure it sits above if it does scroll up */
+    }
+
+    .section-header {
+        margin-bottom: 2rem;
     }
 }
 
