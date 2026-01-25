@@ -1493,6 +1493,7 @@ h1.glitch {
     #partners {
         position: relative;
         z-index: 5;
+        padding-top: 4rem !important;
     }
 
     .section-header {

@@ -14,6 +14,11 @@ const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 
 const isMobile = isTouchDevice && window.innerWidth <= 1024;
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
+// Production Grade Scroll Management
+if (isMobile) {
+    ScrollTrigger.normalizeScroll(true);
+}
+
 ScrollTrigger.config({
     ignoreMobileResize: true,
     autoRefreshEvents: isIOS ? "visibilitychange,DOMContentLoaded,load" : "resize,visibilitychange,DOMContentLoaded,load"
@@ -528,18 +533,29 @@ class App {
                 ScrollTrigger.create({
                     trigger: '#growth-video-section',
                     start: 'top top',
-                    end: '+=3000', // Significantly increased for a smoother, longer pin on mobile
+                    end: isMobile ? '+=4000' : '+=2000',
                     pin: true,
                     pinSpacing: true,
-                    pinType: 'transform', // Better for Lenis compatibility on most mobile browsers
-                    anticipatePin: 1,
-                    scrub: 1, // responsive scrub
+                    pinType: 'fixed',
+                    anticipatePin: 1.5,
+                    scrub: 1.2,
                     preventOverlaps: true,
                     fastScrollEnd: true,
                     onUpdate: (self) => {
                         if (video.duration && !isNaN(video.duration)) {
-                            // Map progress to video duration, leaving a tiny buffer at the end
-                            video.currentTime = Math.max(0, Math.min(video.duration - 0.05, video.duration * self.progress));
+                            const offset = 0.05;
+                            const targetTime = Math.max(0, Math.min(video.duration - offset, video.duration * self.progress));
+                            gsap.to(video, {
+                                currentTime: targetTime,
+                                duration: 0.1,
+                                ease: 'none',
+                                overwrite: true
+                            });
+                        }
+                    },
+                    onRefresh: () => {
+                        if (video.parentElement) {
+                            video.style.transform = 'none';
                         }
                     }
                 });
