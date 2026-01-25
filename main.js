@@ -15,10 +15,7 @@ const isMobile = isTouchDevice && window.innerWidth <= 1024;
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
 // Production Grade Scroll Management
-if (isMobile) {
-    ScrollTrigger.normalizeScroll(true);
-}
-
+// normalizeScroll removed - causes performance issues on some mobile devices
 ScrollTrigger.config({
     ignoreMobileResize: true,
     autoRefreshEvents: isIOS ? "visibilitychange,DOMContentLoaded,load" : "resize,visibilitychange,DOMContentLoaded,load"
@@ -533,29 +530,22 @@ class App {
                 ScrollTrigger.create({
                     trigger: '#growth-video-section',
                     start: 'top top',
-                    end: isMobile ? '+=4000' : '+=2000',
+                    end: isMobile ? '+=4500' : '+=2000', // Massive duration for ultra-smooth mobile scrub
                     pin: true,
                     pinSpacing: true,
-                    pinType: 'fixed',
-                    anticipatePin: 1.5,
-                    scrub: 1.2,
-                    preventOverlaps: true,
-                    fastScrollEnd: true,
+                    pinType: 'transform', // CRITICAL: Better for Lenis compatibility
+                    anticipatePin: 1,
+                    scrub: isMobile ? 0.8 : 0.5, // Tighter scrub for better responsiveness
                     onUpdate: (self) => {
                         if (video.duration && !isNaN(video.duration)) {
-                            const offset = 0.05;
-                            const targetTime = Math.max(0, Math.min(video.duration - offset, video.duration * self.progress));
-                            gsap.to(video, {
-                                currentTime: targetTime,
-                                duration: 0.1,
-                                ease: 'none',
-                                overwrite: true
-                            });
+                            // Direct currentTime update for maximum performance
+                            video.currentTime = Math.max(0, Math.min(video.duration - 0.05, video.duration * self.progress));
                         }
                     },
                     onRefresh: () => {
+                        // Reset any conflicting transforms
                         if (video.parentElement) {
-                            video.style.transform = 'none';
+                            gsap.set(video, { clearProps: 'transform' });
                         }
                     }
                 });

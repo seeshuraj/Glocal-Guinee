@@ -1464,7 +1464,8 @@ h1.glitch {
         visibility: visible !important;
         opacity: 1 !important;
         overflow: visible !important;
-        /* Allow pinning spacers */
+        will-change: transform;
+        contain: paint;
     }
 
     #cashew-canvas-container {
@@ -1484,6 +1485,7 @@ h1.glitch {
         display: block !important;
         opacity: 1 !important;
         z-index: 12 !important;
+        will-change: transform;
     }
 
     .loader-text {
