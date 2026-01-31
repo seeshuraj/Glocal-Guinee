@@ -17,17 +17,7 @@
 <body>
 
 
-    <!-- Fail-safe: Remove loading screen if JS hangs -->
-    <script>
-        setTimeout(() => {
-            const loader = document.getElementById('loading-screen');
-            if (loader) {
-                console.warn('Force removing loading screen via fail-safe');
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 500);
-            }
-        }, 3000);
-    </script>
+
     <div id="app">
         <div id="custom-cursor"></div>
         <div id="grain-overlay"></div>
@@ -412,10 +402,17 @@
             </div>
         </footer>
 
-        <div class="loading-screen" id="loading-screen">
+        <div id="preloader">
             <div class="loader-content">
-                <div class="loader-circle"></div>
-                <span class="loader-text">Loading Glocal Guinee Experience...</span>
+                <div class="loader-logo">
+                    <img src="/src/logo.png" alt="Glocal Guinee Logo">
+                </div>
+                <div class="loader-text">
+                    <span class="loader-brand">GLOCAL GUINEE</span>
+                </div>
+                <div class="loader-progress-bar">
+                    <div class="loader-progress"></div>
+                </div>
             </div>
         </div>
     </div>

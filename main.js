@@ -116,6 +116,7 @@ class App {
 
     init() {
         // 1. Initial UI & Animation Setup
+        this.setupPreloader();
         this.setupBackgroundParticles();
         this.setupEntranceAnimations();
         this.setupScrollTrigger();
@@ -131,25 +132,7 @@ class App {
         // Fail-safe visibility for contact form card
         gsap.set('.contact-form-card', { opacity: 1, x: 0, clearProps: 'all', delay: 2 });
 
-        ScrollTrigger.refresh();
-
-        // 3. Loading Sequence & Stats Trigger
-        const loadingScreen = document.getElementById('loading-screen');
-        if (loadingScreen) {
-            setTimeout(() => {
-                loadingScreen.style.opacity = '0';
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none';
-                    loadingScreen.remove();
-                    this.startPostLoadingAnimations();
-                    ScrollTrigger.refresh();
-                }, 500);
-            }, 1000);
-        } else {
-            this.startPostLoadingAnimations();
-        }
-
-        // 4. Heavy Assets Initialization
+        // 3. Heavy Assets Initialization
         try {
             this.assets.createLandscape();
         } catch (e) {
@@ -157,6 +140,47 @@ class App {
         }
 
         this.animate();
+        ScrollTrigger.refresh();
+    }
+
+    setupPreloader() {
+        const preloader = document.getElementById('preloader');
+        if (!preloader) return;
+
+        const logo = preloader.querySelector('.loader-logo img');
+        const brand = preloader.querySelector('.loader-brand');
+        const progress = preloader.querySelector('.loader-progress');
+
+        // Split brand text for reveal
+        const text = brand.textContent;
+        brand.innerHTML = text.split('').map(char =>
+            `<span style="display:inline-block; transform: translateY(100%); opacity: 0;">${char === ' ' ? '&nbsp;' : char}</span>`
+        ).join('');
+
+        const tl = gsap.timeline({
+            onComplete: () => {
+                gsap.to(preloader, {
+                    yPercent: -100,
+                    duration: 1.2,
+                    ease: 'power4.inOut',
+                    onComplete: () => {
+                        preloader.remove();
+                        this.startPostLoadingAnimations();
+                        ScrollTrigger.refresh();
+                    }
+                });
+            }
+        });
+
+        tl.to(logo, { opacity: 1, scale: 1, duration: 1, ease: 'back.out(1.7)' })
+            .to(progress, { width: '100%', duration: 2, ease: 'power2.inOut' }, '-=0.5')
+            .to(brand.querySelectorAll('span'), {
+                y: '0%',
+                opacity: 1,
+                stagger: 0.05,
+                duration: 0.8,
+                ease: 'power3.out'
+            }, '-=1');
     }
 
     setupBackgroundParticles() {
