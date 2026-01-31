@@ -98,6 +98,119 @@
     will-change: transform;
 }
 
+/* Custom Cursor */
+#custom-cursor {
+    width: 20px;
+    height: 20px;
+    background: var(--primary);
+    border-radius: 50%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: difference;
+    transition: transform 0.15s ease-out, width 0.3s ease, height 0.3s ease;
+    display: none;
+    /* Hidden on mobile via JS */
+}
+
+@media (pointer: fine) {
+    #custom-cursor {
+        display: block;
+    }
+
+    body {
+        cursor: none;
+    }
+
+    a,
+    button {
+        cursor: none !important;
+    }
+}
+
+/* Grain Overlay */
+#grain-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.04;
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    background-repeat: repeat;
+    animation: noise 0.2s infinite;
+}
+
+@media (max-width: 768px) {
+    #grain-overlay {
+        opacity: 0.02;
+    }
+
+    /* Half opacity on mobile to save power */
+}
+
+@keyframes noise {
+    0% {
+        transform: translate(0, 0)
+    }
+
+    10% {
+        transform: translate(-5%, -5%)
+    }
+
+    20% {
+        transform: translate(-10%, 5%)
+    }
+
+    30% {
+        transform: translate(5%, -10%)
+    }
+
+    40% {
+        transform: translate(-5%, 15%)
+    }
+
+    50% {
+        transform: translate(-10%, 5%)
+    }
+
+    60% {
+        transform: translate(15%, 0)
+    }
+
+    70% {
+        transform: translate(0, 10%)
+    }
+
+    80% {
+        transform: translate(-15%, 0)
+    }
+
+    90% {
+        transform: translate(10%, 5%)
+    }
+
+    100% {
+        transform: translate(5%, 0)
+    }
+}
+
+/* Scroll Progress */
+#scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: var(--gradient-main);
+    z-index: 1001;
+    transition: width 0.1s ease-out;
+}
+
 /* Stats Counter Styles */
 .stat-value.counter {
     display: inline-block;
@@ -910,14 +1023,18 @@ h1.glitch {
     font-weight: 700;
     text-align: center;
     opacity: 0;
-    transform: translateY(30px);
     text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     max-width: 80%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) translateY(30px);
 }
 
 @media (max-width: 768px) {
     .v-overlay-text {
-        font-size: 2.5rem;
+        font-size: 2rem;
+        width: 90%;
+        max-width: none;
     }
 }
 
