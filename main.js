@@ -1,12 +1,13 @@
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { Scene } from './src/Scene.js';
 import { Assets } from './src/Assets.js';
 import { Physics } from './src/Physics.js';
 import { Particles } from './src/Particles.js';
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 ScrollTrigger.config({ ignoreMobileResize: true });
 
 // Mobile/Environment Detection
@@ -487,110 +488,88 @@ class App {
 
     initVideoScroll() {
         const container = document.getElementById('cashew-canvas-container');
-        if (!container) return;
-        container.innerHTML = '';
-        container.style.backgroundColor = '#000';
-        container.style.zIndex = '1';
+        const canvas = document.getElementById('growth-canvas');
+        if (!container || !canvas) return;
 
+        const ctx = canvas.getContext('2d');
         const video = document.createElement('video');
-        video.muted = true;
-        video.setAttribute('muted', '');
-        video.setAttribute('playsinline', '');
-        video.setAttribute('webkit-playsinline', '');
-        video.setAttribute('preload', 'auto');
-        video.setAttribute('loop', 'true');
-        video.setAttribute('autoplay', 'true'); // Required for some browsers to load first frame
-
-        // Extremely high z-index to match CSS
-        video.style.cssText = 'width: 100vw; height: 100dvh; object-fit: cover; position: absolute; top:0; left:0; pointer-events: none; opacity: 0; transition: opacity 0.5s ease; z-index: 1001; display: block;';
-
-        // Robust path resolution
         video.src = '/videos/plant-grow-optimized.mp4';
+        video.muted = true;
+        video.playsInline = true;
+        video.preload = 'auto';
 
-        // Add a fallback image to the container
-        container.style.backgroundImage = 'url(/images/about-agriculture.png)';
-        container.style.backgroundSize = 'cover';
-        container.style.backgroundPosition = 'center';
+        const overlayTextEls = document.querySelectorAll('.v-overlay-text');
 
-        const loader = document.createElement('div');
-        loader.innerText = 'Initializing...';
-        loader.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-family: sans-serif; z-index: 10; transition: opacity 0.5s ease;';
-        container.appendChild(loader);
-        container.appendChild(video);
+        const renderFrame = () => {
+            if (video.readyState >= 2) {
+                // Determine dimensions to cover the canvas (like object-fit: cover)
+                const canvasAspect = canvas.width / canvas.height;
+                const videoAspect = video.videoWidth / video.videoHeight;
+                let drawWidth, drawHeight, offsetX, offsetY;
 
-        let isInitialized = false;
-        const initializeScroll = () => {
-            if (isInitialized) return;
-            isInitialized = true;
-            console.log('Video initialization triggered');
+                if (canvasAspect > videoAspect) {
+                    drawWidth = canvas.width;
+                    drawHeight = canvas.width / videoAspect;
+                    offsetX = 0;
+                    offsetY = (canvas.height - drawHeight) / 2;
+                } else {
+                    drawWidth = canvas.height * videoAspect;
+                    drawHeight = canvas.height;
+                    offsetX = (canvas.width - drawWidth) / 2;
+                    offsetY = 0;
+                }
 
-            // Set a tiny delay to ensure video element is ready to be paused and scrubbed
-            setTimeout(() => {
-                video.currentTime = 0.1;
-                video.pause();
-
-                loader.style.opacity = '0';
-                video.style.opacity = '1';
-                setTimeout(() => loader.style.display = 'none', 500);
-
-                ScrollTrigger.create({
-                    trigger: '#growth-video-section',
-                    start: 'top top',
-                    end: isMobile ? '+=4500' : '+=2000', // Massive duration for ultra-smooth mobile scrub
-                    pin: true,
-                    pinSpacing: true,
-                    pinType: 'transform', // CRITICAL: Better for Lenis compatibility
-                    anticipatePin: 1,
-                    scrub: isMobile ? 0.8 : 0.5, // Tighter scrub for better responsiveness
-                    onUpdate: (self) => {
-                        if (video.duration && !isNaN(video.duration)) {
-                            // Direct currentTime update for maximum performance
-                            video.currentTime = Math.max(0, Math.min(video.duration - 0.05, video.duration * self.progress));
-                        }
-                    },
-                    onRefresh: () => {
-                        // Reset any conflicting transforms
-                        if (video.parentElement) {
-                            gsap.set(video, { clearProps: 'transform' });
-                        }
-                    }
-                });
-
-                ScrollTrigger.refresh();
-                window.dispatchEvent(new Event('resize'));
-            }, 300);
+                ctx.drawImage(video, offsetX, offsetY, drawWidth, drawHeight);
+            }
         };
 
-        // Aggressive event listening
-        ['loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough'].forEach(event => {
-            video.addEventListener(event, initializeScroll);
+        const resizeCanvas = () => {
+            canvas.width = window.innerWidth * window.devicePixelRatio;
+            canvas.height = window.innerHeight * window.devicePixelRatio;
+            renderFrame();
+        };
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let isInitialized = false;
+        video.addEventListener('loadedmetadata', () => {
+            if (isInitialized) return;
+            isInitialized = true;
+
+            ScrollTrigger.create({
+                trigger: '#growth-video-section',
+                start: 'top top',
+                end: isMobile ? '+=3000' : '+=2000',
+                pin: true,
+                scrub: 0.5,
+                onUpdate: (self) => {
+                    const progress = self.progress;
+                    const time = progress * video.duration;
+                    video.currentTime = Math.min(time, video.duration - 0.05);
+
+                    // Handle overlays
+                    overlayTextEls.forEach(el => {
+                        const start = parseFloat(el.dataset.start);
+                        const end = parseFloat(el.dataset.end);
+                        if (progress >= start && progress <= end) {
+                            gsap.to(el, { opacity: 1, y: 0, duration: 0.5, overwrite: 'auto' });
+                        } else {
+                            gsap.to(el, { opacity: 0, y: 20, duration: 0.5, overwrite: 'auto' });
+                        }
+                    });
+
+                    renderFrame();
+                }
+            });
         });
 
-        // Manual check for readyState
-        const checkReady = setInterval(() => {
-            if (video.readyState >= 2) {
-                initializeScroll();
-                clearInterval(checkReady);
-            }
-        }, 500);
-
-        // Failsafe: If no initialization after 6 seconds, force it and log
-        video.load();
-        setTimeout(() => {
-            clearInterval(checkReady);
-            if (!isInitialized) {
-                console.error('CRITICAL: Video initialization failed on this device. Forcing visibility.');
-                // Try a different path just in case
-                if (video.readyState === 0) video.src = 'videos/plant-grow-optimized.mp4';
-                initializeScroll();
-
-                // Overlay a message if still failing (invisible but helps debugging)
-                const debugInfo = document.createElement('div');
-                debugInfo.style.cssText = 'position:absolute; bottom:10px; left:10px; color:rgba(255,255,255,0.2); font-size:10px; z-index:100; pointer-events:none;';
-                debugInfo.innerText = `V-Ready: ${video.readyState} | Mob: ${isMobile}`;
-                container.appendChild(debugInfo);
-            }
-        }, 6000);
+        // Forced frame rendering loop for smoothing out seeking
+        const smoothLoop = () => {
+            renderFrame();
+            requestAnimationFrame(smoothLoop);
+        };
+        requestAnimationFrame(smoothLoop);
     }
 
     setupFAQ() {
@@ -655,22 +634,41 @@ class App {
     initLenis() {
         if (typeof Lenis !== 'undefined') {
             this.lenis = new Lenis({
-                duration: 1.2,
+                duration: 1.5, // Slightly slower for more weight
                 easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                direction: 'vertical',
+                gestureDirection: 'vertical',
                 smoothWheel: true,
-                smoothTouch: false, // Use native touch momentum for better mobile feel
-                touchMultiplier: 1.5,
+                smoothTouch: false,
+                touchMultiplier: 2,
                 infinite: false,
+                lerp: 0.1 // Added for smoother transition between speeds
             });
 
             // Connect Lenis to ScrollTrigger
             this.lenis.on('scroll', ScrollTrigger.update);
 
+            // Synchronize with GSAP ticker for frame-perfect alignment
             gsap.ticker.add((time) => {
                 this.lenis.raf(time * 1000);
             });
 
             gsap.ticker.lagSmoothing(0);
+
+            // Handle Anchor Links with GSAP ScrollTo
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = anchor.getAttribute('href');
+                    if (target === '#') return;
+
+                    this.lenis.scrollTo(target, {
+                        offset: -80, // Account for navbar height
+                        duration: 1.5,
+                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+                    });
+                });
+            });
         } else {
             console.warn('Lenis not found. smooth scrolling disabled.');
         }

@@ -50,9 +50,7 @@
                 <a href="#products">Products</a>
                 <a href="#partners">Partners</a>
                 <a href="#contact">Contact</a>
-                <a href="#contact" class="cta-mini" id="nav-cta"
-                    style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Get
-                    in Touch</a>
+                <a href="#contact" class="cta-mini" id="nav-cta">Get in Touch</a>
             </div>
         </nav>
 
@@ -226,11 +224,15 @@
             </section>
 
             <!-- FULL SCREEN VIDEO SCROLL SECTION -->
-            <section id="growth-video-section"
-                style="position: relative; width: 100%; background: #000; overflow: hidden;">
-                <div id="cashew-canvas-container"
-                    style="position: relative; height: 100vh; height: 100dvh; width: 100%; overflow: hidden;">
-                    <!-- Video injected by JS -->
+            <section id="growth-video-section">
+                <div id="cashew-canvas-container">
+                    <canvas id="growth-canvas"></canvas>
+                    <div class="video-text-overlays">
+                        <div class="v-overlay-text" data-start="0" data-end="0.3">FROM THE RICH SOILS OF GUINEA</div>
+                        <div class="v-overlay-text" data-start="0.35" data-end="0.65">NURTURED WITH SUSTAINABLE CARE
+                        </div>
+                        <div class="v-overlay-text" data-start="0.7" data-end="1.0">TO GLOBAL MARKETS WORLDWIDE</div>
+                    </div>
                 </div>
             </section>
 
@@ -246,8 +248,7 @@
                     <div class="globe-3d">
                         <div class="rotating-globe">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg"
-                                class="world-map" style="position: absolute; top:0; left:0; pointer-events:none;"
-                                alt="World Map">
+                                class="world-map" alt="World Map">
                             <!-- Markers -->
                             <div class="marker" style="top: 39%; left: 71%;" title="India">
                                 <div class="marker-label">India 🇮🇳</div>
@@ -262,40 +263,37 @@
                                 <div class="marker-label">China 🇨🇳</div>
                             </div>
                             <!-- GUINEA HQ MARKER - Highlighted -->
-                            <div class="marker"
-                                style="top: 44%; left: 47%; background: radial-gradient(circle at 30% 30%, #f59e0b, #d97706); box-shadow: 0 0 15px rgba(245, 158, 11, 0.8); width: 25px; height: 25px; z-index: 10;"
-                                title="Guinea (HQ)">
-                                <div class="marker-label" style="opacity: 1; top: -50px; background: #d97706;">Guinea
-                                    🇬🇳<br>(HQ)</div>
+                            <div class="marker active" style="top: 44%; left: 47%;" title="Guinea (HQ)">
+                                <div class="marker-label">Guinea 🇬🇳<br>(HQ)</div>
                             </div>
                         </div>
                     </div>
 
                     <div class="info-grid">
-                        <div class="info-box" style="border-color: #d97706; background: #fffaf0;" data-aos-delay="0">
-                            <h3 style="color: #d97706;">🇬🇳 Guinea (HQ)</h3>
+                        <div class="info-box" data-aos-delay="0">
+                            <h3>🇬🇳 Guinea (HQ)</h3>
                             <p>Sourcing & Processing</p>
-                            <p style="font-size: 0.8em; color: #d97706; margin-top: 5px;">Heart of Operations</p>
+                            <p class="tag-line">Heart of Operations</p>
                         </div>
                         <div class="info-box" data-aos-delay="100">
                             <h3>🇮🇳 India</h3>
                             <p>Sesame | Cashew | Cocoa</p>
-                            <p style="font-size: 0.8em; color: #1e3c72; margin-top: 5px;">Key Market</p>
+                            <p class="tag-line">Key Market</p>
                         </div>
                         <div class="info-box" data-aos-delay="200">
                             <h3>🇹🇷 Turkey</h3>
                             <p>Sesame | Cashew</p>
-                            <p style="font-size: 0.8em; color: #1e3c72; margin-top: 5px;">Regional Hub</p>
+                            <p class="tag-line">Regional Hub</p>
                         </div>
                         <div class="info-box" data-aos-delay="300">
                             <h3>🇻🇳 Vietnam</h3>
                             <p>Sesame | Cashew | Cocoa</p>
-                            <p style="font-size: 0.8em; color: #1e3c72; margin-top: 5px;">Growth Market</p>
+                            <p class="tag-line">Growth Market</p>
                         </div>
                         <div class="info-box" data-aos-delay="400">
                             <h3>🇨🇳 China</h3>
                             <p>Sesame | Cashew | Cocoa</p>
-                            <p style="font-size: 0.8em; color: #1e3c72; margin-top: 5px;">Major Market</p>
+                            <p class="tag-line">Major Market</p>
                         </div>
                     </div>
 
